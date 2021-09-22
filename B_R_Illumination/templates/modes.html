@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block content %}
+<body>
+    <div class=" main_modes">
+        <form action="/modes" method="post">
+            <button type="submit" name="CIRCLE" class="myButton CIRCLE">Circle</button>
+        </form>
+        <form action="/modes" method="post">
+            <button type="submit" name="SQUARE" class="myButton SQUARE">Square</button>
+        </form>
+    </div>
+</body>
+{% endblock %}
