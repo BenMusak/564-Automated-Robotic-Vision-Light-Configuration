@@ -9,24 +9,35 @@ slide_value = 10
 x_newvalue = 0
 y_newvalue = 0
 z_newvalue = 120
-@app.route('/', methods = ['GET', 'POST'])
-def controls():
+
+LEFT, RIGHT, UP, DOWN, RESET = "left", "right", "up", "down", "reset"
+AVAILABLE_COMMANDS = {
+    'Left': LEFT,
+    'Right': RIGHT,
+    'Up': UP,
+    'Down': DOWN,
+    'Reset': RESET
+}
+
+
+@app.route('/<cmd>')
+def controls(cmd=None):
     global x_newvalue, y_newvalue, z_newvalue, slide_value
-    if 'RIGHT' in request.form:
-        x_newvalue += int(request.form['volume'])
+    if cmd == 'RIGHT':
+        #x_newvalue += int(request.form['volume'])
         print("RIGHT")
-    elif 'LEFT' in request.form:
-        x_newvalue += -int(request.form['volume'])
+    elif cmd == 'LEFT':
+        #x_newvalue += -int(request.form['volume'])
         print("LEFT")
-    elif 'UP' in request.form:
+    elif cmd == "UP":
         print("UP")
-    elif 'DOWN' in request.form:
+    elif cmd == 'DOWN':
         print("DOWN")
-    elif 'RAISE' in request.form:
+    elif cmd == 'RAISE':
         print("RAISE")
-    elif 'LOWER' in request.form:
+    elif cmd == 'LOWER':
         print("LOWER")
-    elif 'HOME' in request.form:
+    elif cmd == 'HOME':
         x_newvalue = 0
         y_newvalue = 0
         z_newvalue = 120
@@ -35,13 +46,14 @@ def controls():
     if request.form:
         slide_value = request.form['volume']
 
-    #Update webpage
-    return render_template(
-        "index.html",
-        x_value = x_newvalue,
-        y_value = y_newvalue,
-        z_value = z_newvalue,
-        value = slide_value)
+    response = "Moving {}".format(cmd.capitalize())
+
+    # ser.write(camera_command)
+    return response, 200, {'Content-Type': 'text/plain'}
+
+
+
+
 
 @app.route('/')
 @app.route('/home')

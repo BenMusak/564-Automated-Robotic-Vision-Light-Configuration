@@ -5,30 +5,32 @@
         <form action="" method=post>
             <!-- Arrow buttons -->
             <div>
-                <button type="submit" name="UP" class="myButton UP">
+                <button type="button" name="UP" ID="UP" class="myButton UP">
                     <i class="fas fa-chevron-up"></i>
                 </button>
             </div>
-            <button type="submit" name="RIGHT" class="myButton RIGHT">
+            <button type="button" name="RIGHT" class="myButton RIGHT">
                 <i class="fas fa-chevron-right"></i>
 
             </button>
-            <button type="submit" name="LEFT" class="myButton LEFT">
+            <button type="button" name="LEFT" class="myButton LEFT">
                 <i class="fas fa-chevron-left"></i>
 
             </button>
             <div>
-                <button type="submit" name="DOWN" class="myButton DOWN">
+                <button type="button" name="DOWN" class="myButton DOWN">
                     <i class="fas fa-chevron-down"></i>
                 </button>
             </div>
             <!-- Up and down buttons -->
             <div>
-                <button type="submit" name="RAISE" class="myButton RAISE">UP</button>
+                <button type="button" name="RAISE" class="myButton RAISE">UP</button>
             </div>
             <div>
-                <button type="submit" name="LOWER" class="myButton LOWER">DOWN</button>
+                <button type="button" name="LOWER" class="myButton LOWER">DOWN</button>
             </div>
+            <!-- Handle button requests-->
+            <script type="text/javascript" src="buttonRequest.js"></script>
             <!-- Slider -->
             <div>
                 <input type="range" id="volume" name="volume" class="rangeinput slider"
@@ -36,15 +38,7 @@
             </div>
             <label for="distance" class="rangeinput">Distance = <span id="slider_value"></span> (mm)</label>
             <!-- Update slider value with new value-->
-            <script>
-                var slider = document.getElementById("volume");
-                var output = document.getElementById("slider_value");
-                output.innerHTML = slider.value;
-
-                slider.oninput = function () {
-                    output.innerHTML = this.value;
-                }
-            </script>
+            <script type="text/javascript" src="slider.js"></script>
             <div>
                 <span class="xyzvalues">x-value = {{ x_value }}</span>
             </div>
