@@ -1,13 +1,94 @@
 {% extends "layout.html" %}
 {% block content %}
-<body>
-    <div class=" main_modes">
-        <form action="/modes" method="post">
-            <button type="submit" name="CIRCLE" class="myButton CIRCLE">Circle</button>
-        </form>
-        <form action="/modes" method="post">
-            <button type="submit" name="SQUARE" class="myButton SQUARE">Square</button>
-        </form>
+<div class="main">
+  <div class="album py-5 bg-light">
+    <div class="container" id="container">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" id="row">
+
+
+      </div>
     </div>
-</body>
+  </div>
+</div>
+<script>
+ for(let i = 0; i < 4; i++) {
+
+    const para1 = document.createElement("div");
+    para1.className = ("col");
+    para1.id = ("col"+i);
+    const element1 = document.getElementById("row");
+    element1.appendChild(para1);
+
+    const para2 = document.createElement("div");
+    para2.className = ("card shadow-sm");
+    para2.id = ("card"+i);
+    const element2 = document.getElementById("col"+i);
+    element2.appendChild(para2);
+
+    const para3 = document.createElementNS("http://www.w3.org/2000/svg", "svg");;
+    para3.className = ("bd-placeholder-img card-img-top");
+    //para3.setAttribute("className", "bd-placeholder-img card-img-top");
+    para3.setAttribute("width", "100%");
+    para3.setAttribute("height", "225");
+    para3.setAttribute("role", "img");
+    para3.setAttribute("aria-label", "Placeholder: Thumbnail");
+    para3.setAttribute("preserveAspectRatio", "xMidwYMid slice");
+    para3.setAttribute("focusable", "false");
+    para3.id = ("placeholder"+i);
+    const element3 = document.getElementById("card"+i);
+    element3.appendChild(para3);
+
+    const para5 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    para5.id = ("rect"+i);
+    const element5 = document.getElementById("placeholder"+i);
+    element5.appendChild(para5);
+    para5.setAttribute("width", "100%");
+    para5.setAttribute("height", "100%");
+    para5.setAttribute("fill", "#55595c");
+
+    const para6 = document.createElementNS("http://www.w3.org/2000/svg", "text");;
+    para6.setAttribute("x", "50%");
+    para6.setAttribute("y", "50%");
+    para6.setAttribute("fill", "#eceeef");
+    para6.setAttribute("dy", ".3em");
+    const node6 = document.createTextNode("Thumbnail");
+    para6.appendChild(node6);
+    const element6 = document.getElementById("placeholder"+i);
+    element6.appendChild(para6);
+
+    const para7 = document.createElement("card-body");
+    para7.className = ("card-body");
+    para7.id = ("cardbody" + i);
+    const element7 = document.getElementById("card"+i);
+    element7.appendChild(para7);
+
+    const para8 = document.createElement("div");
+    para8.className = ("d-flex justify-content-between align-items-center");
+    para8.id = ("d-flex" + i);
+    const element8 = document.getElementById("cardbody"+i);
+    element8.appendChild(para8);
+
+    const para9 = document.createElement("div");
+    para9.className = ("btn-group");
+    para9.id = ("btn-group"+i);
+    const element9 = document.getElementById("d-flex"+i);
+    element9.appendChild(para9);
+
+    const para10 = document.createElement("button");
+    para10.type = ("button");
+    para10.className = ("btn btn-sm btn-outline-secondary");
+    const node10 = document.createTextNode("View");
+    para10.appendChild(node10);
+    const element10 = document.getElementById("btn-group"+i);
+    element10.appendChild(para10);
+
+    const para11 = document.createElement("button");
+    para11.type = ("button");
+    para11.className = ("btn btn-sm btn-outline-secondary");
+    const node11 = document.createTextNode("Edit");
+    para11.appendChild(node11);
+    const element11 = document.getElementById("btn-group"+i);
+    element11.appendChild(para11);
+  }
+  </script>
 {% endblock %}
