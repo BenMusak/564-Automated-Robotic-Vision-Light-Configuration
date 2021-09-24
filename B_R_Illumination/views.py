@@ -5,10 +5,12 @@ Routes and views for the flask application.
 from datetime import datetime
 from flask import render_template, request
 from B_R_Illumination import app
+import BRClient as BR
 slide_value = 10
 x_newvalue = 0
 y_newvalue = 0
 z_newvalue = 120
+response = "hello"
 
 LEFT, RIGHT, UP, DOWN, RESET = "left", "right", "up", "down", "reset"
 AVAILABLE_COMMANDS = {
@@ -22,7 +24,7 @@ AVAILABLE_COMMANDS = {
 
 @app.route('/<cmd>')
 def controls(cmd=None):
-    global x_newvalue, y_newvalue, z_newvalue, slide_value
+    global x_newvalue, y_newvalue, z_newvalue, slide_value, response
     if cmd == 'RIGHT':
         #x_newvalue += int(request.form['volume'])
         print("RIGHT")
@@ -37,7 +39,9 @@ def controls(cmd=None):
         print("RAISE")
     elif cmd == 'LOWER':
         print("LOWER")
-    elif cmd == 'HOME':
+    #response = "Moving {}".format(cmd.capitalize())
+    if cmd == 'HOME':
+        response = BR.connect()
         x_newvalue = 0
         y_newvalue = 0
         z_newvalue = 120
@@ -46,10 +50,9 @@ def controls(cmd=None):
     if request.form:
         slide_value = request.form['volume']
 
-    response = "Moving {}".format(cmd.capitalize())
 
     # ser.write(camera_command)
-    return response, 200, {'Content-Type': 'text/plain'}
+    return response
 
 
 
