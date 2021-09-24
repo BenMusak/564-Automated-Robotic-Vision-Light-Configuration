@@ -30,7 +30,7 @@
                 <button type="button" name="LOWER" class="myButton LOWER">DOWN</button>
             </div>
             <!-- Handle button requests-->
-            <script type="text/javascript" src="buttonRequest.js"></script>
+            <script type="text/javascript" src="{{url_for('static', filename = 'js/buttonRequest.js')}}"></script>
             <!-- Slider -->
             <div>
                 <input type="range" id="volume" name="volume" class="rangeinput slider"
@@ -38,7 +38,7 @@
             </div>
             <label for="distance" class="rangeinput">Distance = <span id="slider_value"></span> (mm)</label>
             <!-- Update slider value with new value-->
-            <script type="text/javascript" src="slider.js"></script>
+            <script type="text/javascript" src="{{url_for('static', filename = 'js/slider.js')}}"></script>
             <div>
                 <span class="xyzvalues">x-value = {{ x_value }}</span>
             </div>
@@ -49,7 +49,7 @@
                 <span class="xyzvalues">z-value = {{ z_value }}</span>
             </div>
             <div>
-                <button type="submit" name="HOME" class="myButton HOME">HOME</button>
+                <button type="submit" name="HOME" class="myButton HOME">Connect</button>
             </div>
         </form>
     </div>
