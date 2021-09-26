@@ -71,5 +71,5 @@ def home():
 @app.route('/modes', methods = ['GET', 'POST'])
 def modes():
     return render_template(
-        "modes.html")
+        "imageViewer.html")
 
