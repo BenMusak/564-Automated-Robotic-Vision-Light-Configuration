@@ -1,0 +1,113 @@
+
+{% extends "layout.html" %}
+{% block content %}
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Freebie: 4 Bootstrap Gallery Templates</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.8.1/baguetteBox.min.css">
+    <link rel="stylesheet" href="/static/thumbnail-gallery.css">
+
+</head>
+<body>
+
+<div class="container gallery-container">
+
+    <h1>Bootstrap 3 Gallery</h1>
+
+    <p class="page-description text-center">Thumbnails With Title And Description</p>
+    
+    <div class="tz-gallery">
+        <div class="row" id="row">
+        </div>
+    </div>
+</div>
+<script>
+    subfolder = 'images/';
+    filename = 'images/P9200120.jpg';
+    for(let i = 0; i < 4; i++) {
+        const para1 = document.createElement("div"); //Define a "div element"
+        para1.className = ("col-sm-6 col-md-4"); //Define the style class.
+        para1.id = ("col"+i); //Define a ID to the element.
+        const element1 = document.getElementById("row"); //We define the element that we want to append our new element under.
+        element1.appendChild(para1); //We now append our new element under the old element.
+        
+
+        const para2 = document.createElement("div");
+        para2.className = ("thumbnail");
+        para2.id = ("thumbnail" + i);
+        const element2 = document.getElementById("col"+i);
+        element2.appendChild(para2);
+        
+        const para3 = document.createElement("a");
+        para3.className = ("lightbox");
+        para3.id = ("lightbox"+i);
+        para3.href = ("/static/"+filename);
+        const element3 = document.getElementById("thumbnail"+i);
+        element3.appendChild(para3);
+
+        const para4 = document.createElement("img");
+        para4.id = ("img"+i);
+        para4.src = ("/static/"+name);
+        para4.alt = ("Rails");
+        const element4 = document.getElementById("lightbox"+i);
+        element4.appendChild(para4);
+
+        const para5 = document.createElement("div");
+        para5.className = ("caption");
+        para5.id = ("caption"+i);
+        const element5 = document.getElementById("thumbnail"+i);
+        element5.appendChild(para5);
+
+        const para6 = document.createElement("h3");
+        const node6 = document.createTextNode("Thumbnail label");
+        para6.appendChild(node6);
+        const element6 = document.getElementById("caption"+i);
+        element6.appendChild(para6);
+
+        const para7 = document.createElement("p");
+        const node7 = document.createTextNode("This is just a test.");
+        para7.appendChild(node7);
+        const element7 = document.getElementById("caption"+i);
+        element7.appendChild(para7);
+
+        const para9 = document.createElement("div");
+        para9.className = ("btn-group");
+        para9.id = ("btn-group"+i);
+        const element9 = document.getElementById("caption"+i);
+        element9.appendChild(para9);
+
+        const para10 = document.createElement("button");
+        para10.type = ("button");
+        para10.className = ("btn btn-sm btn-outline-secondary");
+        const node10 = document.createTextNode("View");
+        para10.appendChild(node10);
+        const element10 = document.getElementById("btn-group"+i);
+        element10.appendChild(para10);
+
+        const para11 = document.createElement("button");
+        para11.type = ("button");
+        para11.className = ("btn btn-sm btn-outline-secondary");
+        const node11 = document.createTextNode("Edit");
+        para11.appendChild(node11);
+        const element11 = document.getElementById("btn-group"+i);
+        element11.appendChild(para11);
+    }
+
+    </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.8.1/baguetteBox.min.js"></script>
+<script>
+    baguetteBox.run('.tz-gallery');
+</script>
+</body>
+{% endblock %}
+
+
+
