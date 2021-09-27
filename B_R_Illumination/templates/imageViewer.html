@@ -9,10 +9,10 @@
 
     <title>Freebie: 4 Bootstrap Gallery Templates</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.8.1/baguetteBox.min.css">
-    <link rel="stylesheet" href="/static/thumbnail-gallery.css">
+    <link rel="stylesheet" href="/static/css/bootstrap_maxcdn.min.css">
+    <link href="/static/css/google_font.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/baguetteBox.min.css">
+    <link rel="stylesheet" href="/static/imageViewer.css">
 
 </head>
 <body>
@@ -54,7 +54,7 @@
 
         const para4 = document.createElement("img");
         para4.id = ("img"+i);
-        para4.src = ("/static/"+name);
+        para4.src = ("/static/"+filename);
         para4.alt = ("Rails");
         const element4 = document.getElementById("lightbox"+i);
         element4.appendChild(para4);
@@ -102,7 +102,7 @@
 
     </script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.8.1/baguetteBox.min.js"></script>
+<script src="/static/js/imageViewer/baguetteBox.js"></script>
 <script>
     baguetteBox.run('.tz-gallery');
 </script>
