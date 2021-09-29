@@ -3,14 +3,17 @@ Routes and views for the flask application.
 """
 
 from datetime import datetime
-from flask import render_template, request
+from flask import render_template, request, jsonify, json
 from B_R_Illumination import app
 import BRClient as BR
+import folderHandler as fh
 slide_value = 10
 x_newvalue = 0
 y_newvalue = 0
 z_newvalue = 120
 response = "hello"
+folders = []
+images =[]
 
 LEFT, RIGHT, UP, DOWN, RESET = "left", "right", "up", "down", "reset"
 AVAILABLE_COMMANDS = {
@@ -41,7 +44,7 @@ def controls(cmd=None):
         print("LOWER")
     #response = "Moving {}".format(cmd.capitalize())
     if cmd == 'HOME':
-        response = BR.connect()
+        #response = BR.connect()
         x_newvalue = 0
         y_newvalue = 0
         z_newvalue = 120
@@ -70,6 +73,9 @@ def home():
 
 @app.route('/modes', methods = ['GET', 'POST'])
 def modes():
+    (folders, images) = fh.getSubFolders()
     return render_template(
-        "imageViewer.html")
+        "imageViewer.html",
+        folders=folders,
+        images=images)
 
