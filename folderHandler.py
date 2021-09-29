@@ -7,7 +7,7 @@ def getSubFolders():
     images = []
     for i, item in enumerate(folders):
         images.append(os.listdir("B_R_Illumination/static/images/"+str(folders[i])))
-        print(images[i])
+        #print(images[i])
 
     return folders, images
 

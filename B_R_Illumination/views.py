@@ -60,7 +60,7 @@ def controls(cmd=None):
 
 
 
-
+#Normal route for returning back to the home-page
 @app.route('/')
 @app.route('/home')
 def home():
@@ -71,18 +71,23 @@ def home():
         year=datetime.now().year,
     )
 
+#Route for moving to the folder page.
 @app.route('/folders', methods = ['GET', 'POST'])
 def folder():
     (folders, images) = fh.getSubFolders()
+
+    #We now return the folder page and all the subfolder and filenames.
     return render_template(
         "folderViewer.html",
         folders=folders,
         images=images)
 
+#Route for moving to the image-viewer page, which depends on the folder nr. that the user clicks on.
 @app.route('/imageViewer/<index>',methods = ['GET', 'POST'])
 def img(index):
-    print(index)
-    (folders, images) = fh.getSubFolders()
+    (folders, images) = fh.getSubFolders() #We get list of subfolders and images in subfolders.
+    
+    #We now return the image-viewer page and the three necessary variable for determining which subfolder have been chosen.
     return render_template(
         "imageViewer.html",
         folders=folders,
