@@ -7,11 +7,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Freebie: 4 Bootstrap Gallery Templates</title>
+    <title>Image folders</title>
 
     <link rel="stylesheet" href="/static/css/bootstrap_maxcdn.min.css">
     <link href="/static/css/google_font.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/baguetteBox.min.css">
+    <!--<link rel="stylesheet" href="/static/css/baguetteBox.min.css">-->
     <link rel="stylesheet" href="/static/imageViewer.css">
 
 </head>
@@ -19,9 +19,9 @@
 
 <div class="container gallery-container">
 
-    <h1>Bootstrap 3 Gallery</h1>
+    <h1>Image folders</h1>
 
-    <p class="page-description text-center">Thumbnails With Title And Description</p>
+    <p class="page-description text-center">Folders for each test</p>
     
     <div class="tz-gallery">
         <div class="row" id="row">
@@ -29,9 +29,10 @@
     </div>
 </div>
 <script>
-    subfolder = 'images/';
-    filename = 'images/P9200120.jpg';
-    for(let i = 0; i < 4; i++) {
+    let subfolders = JSON.parse('{{ folders | tojson}}');
+    let filename = JSON.parse('{{ images | tojson}}');
+
+    for(let i = 0; i < subfolders.length; i++) {
         const para1 = document.createElement("div"); //Define a "div element"
         para1.className = ("col-sm-6 col-md-4"); //Define the style class.
         para1.id = ("col"+i); //Define a ID to the element.
@@ -47,14 +48,16 @@
         
         const para3 = document.createElement("a");
         para3.className = ("lightbox");
+        //para3.type = ("lightbox")
         para3.id = ("lightbox"+i);
-        para3.href = ("/static/images/"+filename);
+        para3.name = (i);
+        para3.href = ("/imageViewer/" + i);
         const element3 = document.getElementById("thumbnail"+i);
         element3.appendChild(para3);
 
         const para4 = document.createElement("img");
         para4.id = ("img"+i);
-        para4.src = ("/static/images/"+filename);
+        para4.src = ("/static/images/" + subfolders[i] +"/" +filename[i][0]);
         para4.alt = ("Rails");
         const element4 = document.getElementById("lightbox"+i);
         element4.appendChild(para4);
@@ -101,12 +104,8 @@
     }
 
     </script>
-
-<script src="/static/js/imageViewer/baguetteBox.js"></script>
-<script>
-    baguetteBox.run('.tz-gallery');
-</script>
-</body>
+    
+    <script type="text/javascript" src="{{url_for('static', filename = 'js/folderRequest.js')}}"></script>
 {% endblock %}
 
 

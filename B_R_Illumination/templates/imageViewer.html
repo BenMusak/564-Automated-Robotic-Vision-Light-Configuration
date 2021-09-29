@@ -32,8 +32,9 @@
 
     let subfolders = JSON.parse('{{ folders | tojson}}');
     let filename = JSON.parse('{{ images | tojson}}');
+    let chosenFolder = JSON.parse('{{chosenFolder | tojson}}');
 
-    for(let i = 0; i < filename[0].length; i++) {
+    for(let i = 0; i < filename[chosenFolder].length; i++) {
         const para1 = document.createElement("div"); //Define a "div element"
         para1.className = ("col-sm-6 col-md-4"); //Define the style class.
         para1.id = ("col"+i); //Define a ID to the element.
@@ -50,13 +51,13 @@
         const para3 = document.createElement("a");
         para3.className = ("lightbox");
         para3.id = ("lightbox"+i);
-        para3.href = ("/static/images/folder1/"+filename[0][i]);
+        para3.href = ("/static/images/"+ subfolders[chosenFolder] + "/" + filename[chosenFolder][i]);
         const element3 = document.getElementById("thumbnail"+i);
         element3.appendChild(para3);
 
         const para4 = document.createElement("img");
         para4.id = ("img"+i);
-        para4.src = ("/static/images/folder1/"+filename[0][i]);
+        para4.src = ("/static/images/"+ subfolders[chosenFolder] + "/" + filename[chosenFolder][i]);
         para4.alt = ("Rails");
         const element4 = document.getElementById("lightbox"+i);
         element4.appendChild(para4);

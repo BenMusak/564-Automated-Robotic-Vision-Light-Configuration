@@ -71,11 +71,20 @@ def home():
         year=datetime.now().year,
     )
 
-@app.route('/modes', methods = ['GET', 'POST'])
-def modes():
+@app.route('/folders', methods = ['GET', 'POST'])
+def folder():
+    (folders, images) = fh.getSubFolders()
+    return render_template(
+        "folderViewer.html",
+        folders=folders,
+        images=images)
+
+@app.route('/imageViewer/<index>',methods = ['GET', 'POST'])
+def img(index):
+    print(index)
     (folders, images) = fh.getSubFolders()
     return render_template(
         "imageViewer.html",
         folders=folders,
+        chosenFolder=index,
         images=images)
-
