@@ -1,4 +1,4 @@
-/*css file for changing layout of the html page*/
+/*css file for changing layout of the html pages*/
 
 .xyzvalues {
     position: relative;
@@ -8,11 +8,11 @@
 
 /*Button design*/
 .myButton {
-    box-shadow: inset 0px 0px 15px 3px #23395e;
-    background: linear-gradient(to bottom, #2e466e 5%, #415989 100%);
-    background-color: #2e466e;
+    box-shadow: inset 0px 0px 15px 3px #f80;
+    background: linear-gradient(to bottom, #f80 5%, #f80 100%);
+    background-color: #f80;
     border-radius: 17px;
-    border: 1px solid #1f2f47;
+    border: 1px solid #f80;
     display: inline-block;
     cursor: pointer;
     color: #ffffff;
@@ -20,12 +20,12 @@
     font-size: 15px;
     padding: 10px 20px;
     text-decoration: none;
-    text-shadow: 0px 1px 0px #263666;
+    text-shadow: 0px 1px 0px #f80;
 }
 
 .myButton:hover {
-    background: linear-gradient(to bottom, #415989 5%, #2e466e 100%);
-    background-color: #415989;
+    background: linear-gradient(to bottom, #f80 5%, #f80 100%);
+    background-color: #f80;
 }
 
 /*.myButton:active {
@@ -92,7 +92,7 @@
 .header {
     padding: 1%;
     text-align: center;
-    background: #2e466e;
+    background: #f80;
     color: white;
 }
 /* Column container */
@@ -129,7 +129,7 @@ label {
 }
 
 .rangeinput.color {
-    background: #2e466e
+    background: #f80
 }
 
 .slider {
@@ -149,7 +149,7 @@ label {
     width: 25px;
     height: 25px;
     border-radius: 10px;
-    background: #2e466e;
+    background: #f80;
     cursor: pointer;
 }
 

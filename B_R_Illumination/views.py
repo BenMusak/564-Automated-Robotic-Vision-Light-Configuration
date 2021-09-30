@@ -3,14 +3,17 @@ Routes and views for the flask application.
 """
 
 from datetime import datetime
-from flask import render_template, request
+from flask import render_template, request, jsonify, json
 from B_R_Illumination import app
 import BRClient as BR
+import folderHandler as fh
 slide_value = 10
 x_newvalue = 0
 y_newvalue = 0
 z_newvalue = 120
 response = "hello"
+folders = []
+images =[]
 
 LEFT, RIGHT, UP, DOWN, RESET = "left", "right", "up", "down", "reset"
 AVAILABLE_COMMANDS = {
@@ -41,7 +44,7 @@ def controls(cmd=None):
         print("LOWER")
     #response = "Moving {}".format(cmd.capitalize())
     if cmd == 'HOME':
-        response = BR.connect()
+        #response = BR.connect()
         x_newvalue = 0
         y_newvalue = 0
         z_newvalue = 120
@@ -57,7 +60,7 @@ def controls(cmd=None):
 
 
 
-
+#Normal route for returning back to the home-page
 @app.route('/')
 @app.route('/home')
 def home():
@@ -68,8 +71,25 @@ def home():
         year=datetime.now().year,
     )
 
-@app.route('/modes', methods = ['GET', 'POST'])
-def modes():
-    return render_template(
-        "modes.html")
+#Route for moving to the folder page.
+@app.route('/folders', methods = ['GET', 'POST'])
+def folder():
+    (folders, images) = fh.getSubFolders()
 
+    #We now return the folder page and all the subfolder and filenames.
+    return render_template(
+        "folderViewer.html",
+        folders=folders,
+        images=images)
+
+#Route for moving to the image-viewer page, which depends on the folder nr. that the user clicks on.
+@app.route('/imageViewer/<index>',methods = ['GET', 'POST'])
+def img(index):
+    (folders, images) = fh.getSubFolders() #We get list of subfolders and images in subfolders.
+    
+    #We now return the image-viewer page and the three necessary variable for determining which subfolder have been chosen.
+    return render_template(
+        "imageViewer.html",
+        folders=folders,
+        chosenFolder=index,
+        images=images)

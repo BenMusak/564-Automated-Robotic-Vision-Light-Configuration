@@ -14,7 +14,7 @@ Libraries required to run the program
 Setup the rules here
 - All files that only relates to your own pc should never be included in commits, make sure to add them to gitingore!.
 - All custom environments should be added to gitingore.
-- No direct commits, only pull requests.
+- If you did not create the branch (or if it the main branch), please to not make direct commits, only pull requests.
 
 # Tasks 
 - [ ] Update HTML files with appropriate layout. 
