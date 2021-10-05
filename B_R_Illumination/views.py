@@ -7,6 +7,7 @@ from flask import render_template, request, jsonify, json
 from B_R_Illumination import app
 import BRClient as BR
 import folderHandler as fh
+import imageHandler as ih
 slide_value = 10
 x_newvalue = 0
 y_newvalue = 0
@@ -45,6 +46,7 @@ def controls(cmd=None):
     #response = "Moving {}".format(cmd.capitalize())
     if cmd == 'HOME':
         #response = BR.connect()
+        ih.getURLImage()
         x_newvalue = 0
         y_newvalue = 0
         z_newvalue = 120

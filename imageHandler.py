@@ -1,10 +1,16 @@
 import urllib.request
-from PIL import Image
-import PIL
+
+
+
 
 def getURLImage():
 
-    local_filename = "static/images/css/img1.jpg"
-    local_filename, headers = urllib.request.urlretrieve("https://192.168.200.1:8080/jpg?q=2")
+    #local_filename = "D:/OneDrive/Robotics/PycharmProjects/564-Automated-Robotic-Vision-Light-Configuration/B_R_Illumination/static/images/subfolder1/img.jpg"
+    local_filename = "B_R_Illumination/static/images/subfolder1/img.jpg"
+    img_url = "http://www.zoomify.com/assets/thumbnails/thmbExpressLg.jpg" #Only http requests work.
+    urllib.request.urlretrieve(img_url, local_filename)
 
+
+
+    
     
