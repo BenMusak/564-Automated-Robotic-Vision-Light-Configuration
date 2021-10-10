@@ -3,15 +3,26 @@
 
 # Dependencies
 Libraries required to run the program
+- Flask 1.1 
+
+# How to run
+ - Create a custom python environment that includes all the necesary dependencies. 
+ - Link the python environment to the project.
+ - Run the "runserver.py" file.
 
 # Rules
 Setup the rules here
+- All files that only relates to your own pc should never be included in commits, make sure to add them to gitignore!.
+- All custom environments should be added to gitignore.
+- If you did not create the branch (or if it the main branch), please to not make direct commits, only pull requests.
 
 # Tasks 
-- [ ] Opgave nr. 1
-- [ ] Opgave nr. 2
+- [ ] Update HTML files with appropriate layout. 
+- [ ] Add socket dependency
+- [ ] Create script for tcp/ip or udp/ip communication with B&R Automation studio.
 
 # Issues
 - [ ] Issues tasks here 
 
 # Links
+Further information about the Flask framework can be found here: https://code.visualstudio.com/docs/python/tutorial-flask 

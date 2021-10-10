@@ -1,0 +1,159 @@
+/*css file for changing layout of the html pages*/
+
+.xyzvalues {
+    position: relative;
+    top: -55px;
+    font: 1rem 'Fira Sans', sans-serif;
+}
+
+/*Button design*/
+.myButton {
+    box-shadow: inset 0px 0px 15px 3px #f80;
+    background: linear-gradient(to bottom, #f80 5%, #f80 100%);
+    background-color: #f80;
+    border-radius: 17px;
+    border: 1px solid #f80;
+    display: inline-block;
+    cursor: pointer;
+    color: #ffffff;
+    font-family: Arial;
+    font-size: 15px;
+    padding: 10px 20px;
+    text-decoration: none;
+    text-shadow: 0px 1px 0px #f80;
+}
+
+.myButton:hover {
+    background: linear-gradient(to bottom, #f80 5%, #f80 100%);
+    background-color: #f80;
+}
+
+/*.myButton:active {
+    position: relative;
+    top: 1px;  
+}*/
+/*Button position*/
+.myButton.UP {
+    position: relative;
+    left: 0px;
+    top: 0px;
+}
+
+.myButton.DOWN {
+    position: relative;
+    left: 0px;
+    top: 0px;
+}
+
+.myButton.RIGHT {
+    position: relative;
+    left: 75px;
+    top: 0px;
+}
+
+.myButton.LEFT {
+    position: relative;
+    left: -75px;
+    top: 0px;
+}
+
+.myButton.RAISE {
+    position: relative;
+    left: 130px;
+    top: -100px;
+}
+
+.myButton.LOWER {
+    position: relative;
+    left: 130px;
+    top: -95px;
+}
+
+.myButton.HOME {
+    position: relative;
+    left: -130px;
+    top: -260px;
+}
+
+.myButton.CIRCLE {
+    position: relative;
+    left: 0px;
+    top: 50px;
+    align-self: center;
+}
+
+.myButton.SQUARE {
+    position: relative;
+    left: 0px;
+    top: 50px;
+    align-self: center;
+}
+/* Header/logo Title */
+.header {
+    padding: 1%;
+    text-align: center;
+    background: #f80;
+    color: white;
+}
+/* Column container */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+}
+/* Main column */
+.main {
+    flex: 70%;
+    text-align: center;
+    align-content: center;
+    align-items: center;
+    background-color: white;
+    padding: 20px;
+}
+
+.main_modes {
+    flex: 70%;
+    text-align: center;
+    align-content: center;
+    align-items: center;
+    background-color: white;
+}
+
+label {
+    font: 1rem 'Fira Sans', sans-serif;
+}
+
+.rangeinput {
+    position: relative;
+    top: -70px;
+    /*margin: .4rem;*/
+}
+
+.rangeinput.color {
+    background: #f80
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 180px;
+    height: 15px;
+    border-radius: 5px;
+    background: #a8a8a8;
+    outline: none;
+    opacity: 1;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 10px;
+    background: #f80;
+    cursor: pointer;
+}
+
+body {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}

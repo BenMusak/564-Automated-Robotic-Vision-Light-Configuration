@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row">
+    <div class="main">
+        <form action="" method=post>
+            <!-- Arrow buttons -->
+            <div>
+                <button type="button" name="UP" ID="UP" class="myButton UP">
+                    <i class="fas fa-chevron-up"></i>
+                </button>
+            </div>
+            <button type="button" name="RIGHT" class="myButton RIGHT">
+                <i class="fas fa-chevron-right"></i>
+
+            </button>
+            <button type="button" name="LEFT" class="myButton LEFT">
+                <i class="fas fa-chevron-left"></i>
+
+            </button>
+            <div>
+                <button type="button" name="DOWN" class="myButton DOWN">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+            <!-- Up and down buttons -->
+            <div>
+                <button type="button" name="RAISE" class="myButton RAISE">UP</button>
+            </div>
+            <div>
+                <button type="button" name="LOWER" class="myButton LOWER">DOWN</button>
+            </div>
+            <!-- Handle button requests-->
+            <script type="text/javascript" src="{{url_for('static', filename = 'js/buttonRequest.js')}}"></script>
+            <!-- Slider -->
+            <div>
+                <input type="range" id="volume" name="volume" class="rangeinput slider"
+                       min="0" max="20" value={{value}}>
+            </div>
+            <label for="distance" class="rangeinput">Distance = <span id="slider_value"></span> (mm)</label>
+            <!-- Update slider value with new value-->
+            <script type="text/javascript" src="{{url_for('static', filename = 'js/slider.js')}}"></script>
+            <div>
+                <span class="xyzvalues">x-value = {{ x_value }}</span>
+            </div>
+            <div>
+                <span class="xyzvalues">y-value = {{ y_value }}</span>
+            </div>
+            <div>
+                <span class="xyzvalues">z-value = {{ z_value }}</span>
+            </div>
+            <div>
+                <button type="submit" name="HOME" class="myButton HOME">Connect</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
