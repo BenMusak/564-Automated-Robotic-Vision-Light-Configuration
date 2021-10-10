@@ -15,6 +15,7 @@ z_newvalue = 120
 response = "hello"
 folders = []
 images =[]
+i = 0
 
 LEFT, RIGHT, UP, DOWN, RESET = "left", "right", "up", "down", "reset"
 AVAILABLE_COMMANDS = {
@@ -28,7 +29,7 @@ AVAILABLE_COMMANDS = {
 
 @app.route('/<cmd>')
 def controls(cmd=None):
-    global x_newvalue, y_newvalue, z_newvalue, slide_value, response
+    global x_newvalue, y_newvalue, z_newvalue, slide_value, response, i
     if cmd == 'RIGHT':
         #x_newvalue += int(request.form['volume'])
         print("RIGHT")
@@ -46,8 +47,9 @@ def controls(cmd=None):
     #response = "Moving {}".format(cmd.capitalize())
     if cmd == 'HOME':
         #response = BR.connect()
-        ih.getURLImage("subfolder1", "img", "3")
-        ih.getURLImage("subfolder2", "test", "1")
+
+        ih.getURLImage("subfolder1", "img", str(i))
+        i += 1
         x_newvalue = 0
         y_newvalue = 0
         z_newvalue = 120
