@@ -11,21 +11,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Image folder</title>
-
-    <link rel="stylesheet" href="/static/css/bootstrap_maxcdn.min.css">
+    <!--<link rel="stylesheet" href="/static/css/bootstrap_maxcdn.min.css">-->
     <link href="/static/css/google_font.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/baguetteBox.min.css">
     <link rel="stylesheet" href="/static/imageViewer.css">
-
 </head>
-<body>
 
+<body>
 <div class="container gallery-container">
 
     <h1>Image gallery</h1>
-
     <p class="page-description text-center">Thumbnails With Title And Description</p>
-    
     <div class="tz-gallery">
         <div class="row" id="row">
         </div>
@@ -44,7 +40,6 @@
         const element1 = document.getElementById("row"); //We define the element that we want to append our new element under.
         element1.appendChild(para1); //We now append our new element under the old element.
         
-
         const para2 = document.createElement("div");
         para2.className = ("thumbnail");
         para2.id = ("thumbnail" + i);
@@ -59,6 +54,7 @@
         element3.appendChild(para3);
 
         const para4 = document.createElement("img");
+        para4.className= ("card-img-top");
         para4.id = ("img"+i);
         para4.src = ("/static/images/"+ subfolders[chosenFolder] + "/" + filename[chosenFolder][i]);
         para4.alt = ("Rails");
@@ -91,7 +87,9 @@
 
         const para10 = document.createElement("button");
         para10.type = ("button");
+        para10.id = ("button"+i)
         para10.className = ("btn btn-sm btn-outline-secondary");
+        para10.onclick = function(){showModal(chosenFolder,i)};
         const node10 = document.createTextNode("View");
         para10.appendChild(node10);
         const element10 = document.getElementById("btn-group"+i);
@@ -104,10 +102,57 @@
         para11.appendChild(node11);
         const element11 = document.getElementById("btn-group"+i);
         element11.appendChild(para11);
+
     }
 
     </script>
+<script>
+    var modalWrap = null
+    //var tekst = "This is a test test"
+    const showModal=(chosenFolder, i) =>{
+        if(modalWrap !== null){
+            modalWrap.remove();
+        }
+        var main_title = filename[chosenFolder][i];
+        var tekst = filename[chosenFolder][i];
+        modalWrap = document.createElement("div");
+        modalWrap.innerHTML = `
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">`+ main_title +`</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+         `+ tekst + `
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>      
+        `;
+        document.body.append(modalWrap);
+        var modal = new bootstrap.Modal(modalWrap.querySelector('.modal'));
+        modal.show();
+    
+    }
+</script>
 
+<script type="text/javascript">
+    //var myModal = document.getElementById('exampleModal');
+    var myModal = new bootstrap.Modal(document.getElementById('myModal'));
+    var myInput = document.getElementById('button0');
+
+    myInput.addEventListener('click', function () {
+    myModal.show();
+    //$("#exampleModal").modal()
+    })
+</script>
 <script src="/static/js/imageViewer/baguetteBox.js"></script>
 <script>
     baguetteBox.run('.tz-gallery');

@@ -83,6 +83,7 @@ def folder():
 
     #We now return the folder page and all the subfolder and filenames.
     return render_template(
+        #"test.html",
         "folderViewer.html",
         folders=folders,
         images=images)
