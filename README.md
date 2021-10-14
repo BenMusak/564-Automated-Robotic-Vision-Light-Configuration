@@ -4,6 +4,7 @@
 # Dependencies
 Libraries required to run the program
 - Flask 1.1 
+- RoboDK
 
 # How to run
  - Create a custom python environment that includes all the necesary dependencies. 
@@ -17,7 +18,6 @@ Setup the rules here
 - If you did not create the branch (or if it the main branch), please to not make direct commits, only pull requests.
 
 # Tasks 
-- [ ] Update HTML files with appropriate layout. 
 - [ ] Add socket dependency
 - [ ] Create script for tcp/ip or udp/ip communication with B&R Automation studio.
 

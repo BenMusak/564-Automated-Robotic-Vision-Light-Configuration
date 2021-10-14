@@ -8,6 +8,7 @@ from B_R_Illumination import app
 import BRClient as BR
 import folderHandler as fh
 import imageHandler as ih
+import roboDK as rDK
 slide_value = 10
 x_newvalue = 0
 y_newvalue = 0
@@ -26,6 +27,7 @@ AVAILABLE_COMMANDS = {
     'Reset': RESET
 }
 
+robot = rDK.initializeRobot()
 
 @app.route('/<cmd>')
 def controls(cmd=None):
@@ -33,17 +35,23 @@ def controls(cmd=None):
     if cmd == 'RIGHT':
         #x_newvalue += int(request.form['volume'])
         print("RIGHT")
+        rDK.moveRobot(robot, 75)
     elif cmd == 'LEFT':
         #x_newvalue += -int(request.form['volume'])
         print("LEFT")
+        rDK.moveRobot(robot, 77)
     elif cmd == "UP":
         print("UP")
+        rDK.moveRobot(robot, 72)
     elif cmd == 'DOWN':
         print("DOWN")
+        rDK.moveRobot(robot, 80)
     elif cmd == 'RAISE':
         print("RAISE")
+        rDK.moveRobot(robot, 113)
     elif cmd == 'LOWER':
         print("LOWER")
+        rDK.moveRobot(robot, 97)
     #response = "Moving {}".format(cmd.capitalize())
     if cmd == 'HOME':
         #response = BR.connect()
