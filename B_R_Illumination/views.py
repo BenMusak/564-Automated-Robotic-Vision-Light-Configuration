@@ -28,10 +28,11 @@ AVAILABLE_COMMANDS = {
 }
 
 robot = rDK.initializeRobot()
-
-@app.route('/<cmd>')
-def controls(cmd=None):
+#/<cmd>
+@app.route('/process', methods=['POST'])
+def process():
     global x_newvalue, y_newvalue, z_newvalue, slide_value, response, i
+    cmd = request.form['name']
     if cmd == 'RIGHT':
         #x_newvalue += int(request.form['volume'])
         print("RIGHT")
@@ -61,14 +62,12 @@ def controls(cmd=None):
         x_newvalue = 0
         y_newvalue = 0
         z_newvalue = 120
-
     #Save slider position
-    if request.form:
-        slide_value = request.form['volume']
-
-
+    #if request.form:
+        #slide_value = request.form['volume']
+    response = "Successfully moved the robot " + cmd
     # ser.write(camera_command)
-    return response
+    return jsonify({'output' : response})
 
 
 

@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+
 <div class="row">
     <div class="main">
         <form action="" method=post>
@@ -30,7 +31,7 @@
                 <button type="button" name="LOWER" class="myButton LOWER">DOWN</button>
             </div>
             <!-- Handle button requests-->
-            <script type="text/javascript" src="{{url_for('static', filename = 'js/buttonRequest.js')}}"></script>
+            <!--<script type="text/javascript" src="{{url_for('static', filename = 'js/buttonRequest.js')}}"></script>-->
             <!-- Slider -->
             <div>
                 <input type="range" id="volume" name="volume" class="rangeinput slider"
@@ -51,6 +52,27 @@
             <div>
                 <button type="submit" name="HOME" class="myButton HOME">Connect</button>
             </div>
+            <div id="successAlert" class="alert alert-success" role="alert" style="display:none;"></div>
+            <div id="errorAlert" class="alert alert-danger" role="alert" style="display:none;"></div>
+        <!--<script src="{{url_for('static', filename = 'js/test.js')}}"></script>-->
+        <script>
+        $('button').click(function(event){
+        $.ajax({
+            data : {
+                name : $(this).prop("name")     
+            },
+            type : 'POST',
+            url : '/process'
+        })
+        .done(function(data){
+            if (data.output){
+                 $('#successAlert').text(data.output).show();
+                 $('#errorAlert').hide();
+            }
+        });
+        event.preventDefault();
+        });
+        </script>
         </form>
     </div>
 </div>
