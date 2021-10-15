@@ -4,7 +4,13 @@
 # Dependencies
 Libraries required to run the program
 - Flask 1.1 
-- RoboDK
+- RoboDK (program and libraries)
+
+# How to install RoboDK libraries.
+- Navigate to C:\RoboDK\Python37\Lib\site-packages (or wherever you installed RoboDK)
+- find the folders "robodk" and "robolink"
+- Copy the folders and paste them into your prefered python environment folder
+  - Example: I pasted them into C:\Users\Kaj\anaconda3\envs\Flask_WebGUI
 
 # How to run
  - Create a custom python environment that includes all the necesary dependencies. 
