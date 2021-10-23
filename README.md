@@ -5,6 +5,10 @@
 Libraries required to run the program
 - Flask 1.1 
 - RoboDK (program and libraries)
+- Numpy
+
+# Numpy Anaconda issues.
+- I you experience problems when installing numpy using Anaconda, then try pip install (Worked for me).
 
 # How to install RoboDK libraries.
 - Navigate to C:\RoboDK\Python37\Lib\site-packages (or wherever you installed RoboDK)
@@ -15,6 +19,7 @@ Libraries required to run the program
 # How to run
  - Create a custom python environment that includes all the necesary dependencies. 
  - Link the python environment to the project.
+ - Open Robodk and import an UR5e from the library.
  - Run the "runserver.py" file.
 
 # Rules
