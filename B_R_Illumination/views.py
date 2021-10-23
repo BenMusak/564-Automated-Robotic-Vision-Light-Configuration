@@ -56,7 +56,7 @@ def process():
     #response = "Moving {}".format(cmd.capitalize())
     if cmd == 'HOME':
         #response = BR.connect()
-
+        rDK.startHemisPath(robot)
         ih.getURLImage("subfolder1", "img", str(i))
         i += 1
         x_newvalue = 0
