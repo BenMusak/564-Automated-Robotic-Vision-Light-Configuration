@@ -18,9 +18,18 @@ def initializeRobot():
     # Start RoboDK API
     RDK = Robolink()
     #RDK.setRunMode(RUNMODE_RUN_ROBOT)
-
+    
+    RDK_StationList = RDK.getOpenStations()
+    RDK_StationNames = []
+    # Save all station names in a list.
+    for station in RDK_StationList:
+        RDK_StationNames.append(station.Name())
+    # Loading the RoboDK work station if it is not already loaded.
+    if "Work_station" not in RDK_StationNames:
+        RDK.AddFile("Work_station.rdk")
     # get a robot
-    robot = RDK.Item('UR5e', ITEM_TYPE_ROBOT)
+    robot = RDK.Item('UR5e_Light1', ITEM_TYPE_ROBOT)
+    robot1 = RDK.Item('UR5e_Camera', ITEM_TYPE_ROBOT)
     if not robot.Valid():
         print("No robot in the station. Load a robot first, then run this program.")
         pause(5)
@@ -28,7 +37,6 @@ def initializeRobot():
 
     #Uncomment if we want to run on real robot.
     RUN_ON_ROBOT = False
-
 
     # Important: by default, the run mode is RUNMODE_SIMULATE
     # If the program is generated offline manually the runmode will be RUNMODE_MAKE_ROBOTPROG,
@@ -56,7 +64,7 @@ def initializeRobot():
     print('Using robot: %s' % robot.Name())
     print('Use the arrows (left, right, up, down), Q and A keys to move the robot')
     print('Note: This works on console mode only, you must run the PY file separately')
-    return robot
+    return robot, robot1
 
 def moveRobot(robot, key):
     speed_ms = 0.300
@@ -129,7 +137,7 @@ def moveRobot(robot, key):
 
         # robot.MoveL(new_robot_joints)
 
-def startHemisPath(robot):
+def startHemisPath(robot, run):
     # The goal here is to autogenerate a path in the shape of an hemisphere (with the object in the center),
     # that the robot can follow. We can then change the size of the hemisphere to
     # test from different distances. Furthermore, the lights should always point at the object,
@@ -205,6 +213,10 @@ def startHemisPath(robot):
     # We run the for loop, where we send the coordinates to the robot.
     for pos in xyzrpw:
 
+        # Stop the process. Here Run simulates a pointer.
+        if run[0] != True:
+            break
+            print("Ending the loop")
         # If you want to see the individual positions in RoboDk, then remove the "#" from
         # the next two lines.
         #frames.append(RDK.AddTarget(str(pos)))
@@ -245,3 +257,5 @@ def startHemisPath(robot):
         robot.MoveJ(new_robot_joints)
         time.sleep(0.3)
         i += 1
+thread = threading.Thread(target=startHemisPath)
+thread.start()

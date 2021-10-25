@@ -18,6 +18,8 @@ folders = []
 images =[]
 i = 0
 
+
+run = [True] # Used for stopping the RoboDK threads.We can simulate them using a list, since pointers do not exist in python.
 LEFT, RIGHT, UP, DOWN, RESET = "left", "right", "up", "down", "reset"
 AVAILABLE_COMMANDS = {
     'Left': LEFT,
@@ -27,36 +29,39 @@ AVAILABLE_COMMANDS = {
     'Reset': RESET
 }
 
-robot = rDK.initializeRobot()
+robot, robot1 = rDK.initializeRobot() # This function returns two robot items, so we can control them individually.
 #/<cmd>
 @app.route('/process', methods=['POST'])
 def process():
-    global x_newvalue, y_newvalue, z_newvalue, slide_value, response, i
+    global x_newvalue, y_newvalue, z_newvalue, slide_value, response, i, run
     cmd = request.form['name']
     if cmd == 'RIGHT':
         #x_newvalue += int(request.form['volume'])
         print("RIGHT")
-        rDK.moveRobot(robot, 75)
+        #rDK.moveRobot(robot1, 75)
+        run[0] = True
+        rDK.startHemisPath(robot1, run)
     elif cmd == 'LEFT':
         #x_newvalue += -int(request.form['volume'])
         print("LEFT")
-        rDK.moveRobot(robot, 77)
+        #rDK.moveRobot(robot1, 77)
+        run[0] = False
     elif cmd == "UP":
         print("UP")
-        rDK.moveRobot(robot, 72)
+        rDK.moveRobot(robot1, 72)
     elif cmd == 'DOWN':
         print("DOWN")
-        rDK.moveRobot(robot, 80)
+        rDK.moveRobot(robot1, 80)
     elif cmd == 'RAISE':
         print("RAISE")
-        rDK.moveRobot(robot, 113)
+        rDK.moveRobot(robot1, 113)
     elif cmd == 'LOWER':
         print("LOWER")
-        rDK.moveRobot(robot, 97)
+        rDK.moveRobot(robot1, 97)
     #response = "Moving {}".format(cmd.capitalize())
     if cmd == 'HOME':
         #response = BR.connect()
-        rDK.startHemisPath(robot)
+        rDK.startHemisPath(robot, run)
         ih.getURLImage("subfolder1", "img", str(i))
         i += 1
         x_newvalue = 0
