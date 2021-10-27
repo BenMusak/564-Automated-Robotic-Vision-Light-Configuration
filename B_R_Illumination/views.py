@@ -29,7 +29,7 @@ AVAILABLE_COMMANDS = {
     'Reset': RESET
 }
 
-robot, robot1 = rDK.initializeRobot() # This function returns two robot items, so we can control them individually.
+robot, robot1, RDK = rDK.initializeRobot() # This function returns two robot items, so we can control them individually.
 #/<cmd>
 @app.route('/process', methods=['POST'])
 def process():
