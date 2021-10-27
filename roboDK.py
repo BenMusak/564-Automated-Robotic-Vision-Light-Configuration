@@ -64,7 +64,7 @@ def initializeRobot():
     print('Using robot: %s' % robot.Name())
     print('Use the arrows (left, right, up, down), Q and A keys to move the robot')
     print('Note: This works on console mode only, you must run the PY file separately')
-    return robot, robot1
+    return robot, robot1, RDK
 
 def moveRobot(robot, key):
     speed_ms = 0.300
@@ -154,7 +154,7 @@ def startHemisPath(robot, run):
     i = 0 # Used for indexing xyzrpw list.
 
     base_xyz = [500, 0, 0] # Reference frame (Center of Hemisphere)
-    step = 0.1
+    step = 0.5
 
 # Generating the 3D points for an hemisphere
 # We iterate over all y-coordinate before we change to new x-coordinate, thereafter
@@ -183,16 +183,18 @@ def startHemisPath(robot, run):
                     # We now compute the vector coordinates.
                     vec_x = base_xyz[0] - x
                     vec_y = base_xyz[1] - y
-                    vec_z = base_xyz[2] - z
+                    vec_z = z - base_xyz[2]
 
                     #We now compute roll, pitch and yaw.
-                    r = 0*pi/180 # we have no way of computing roll, so we set it to zero deg.
+                    rot_x = atan2(vec_z,vec_y)/pi*180  # we have no way of computing roll, so we set it to zero deg.
                     #yaw = np.arcsin(-vec_y)/pi*180 # Another method
-                    yaw = 180 - atan2(-vec_y,-vec_x)/pi*180
-                    p = atan2(-vec_z,-vec_x)/pi*180
+                    rot_y = atan2(vec_z,vec_x)/pi*180
+
+                    rot_z = atan2(vec_y, vec_x)/pi*180
+
                     xyz.append([x,y,z])
                     # I am not completely sure in which order roll, pitch and yaw should come in
-                    xyzrpw.append([x, y, z, p, -90,yaw])
+                    xyzrpw.append([x, y, z, rot_x, rot_y, rot_z])
                     print(xyzrpw[i])
                     i += 1
                 # Using the double for loop actually results is us trying to find values that exceed
