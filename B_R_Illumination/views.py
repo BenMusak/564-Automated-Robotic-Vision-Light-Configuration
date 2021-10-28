@@ -40,7 +40,7 @@ def process():
         print("RIGHT")
         #rDK.moveRobot(robot1, 75)
         run[0] = True
-        rDK.startHemisPath(robot1, run)
+        rDK.startHemisPath(robot1, run, RDK)
     elif cmd == 'LEFT':
         #x_newvalue += -int(request.form['volume'])
         print("LEFT")
@@ -61,7 +61,7 @@ def process():
     #response = "Moving {}".format(cmd.capitalize())
     if cmd == 'HOME':
         #response = BR.connect()
-        rDK.startHemisPath(robot, run)
+        rDK.startHemisPath(robot, run, RDK)
         ih.getURLImage("subfolder1", "img", str(i))
         i += 1
         x_newvalue = 0
