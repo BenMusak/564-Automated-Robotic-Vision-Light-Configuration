@@ -28,8 +28,8 @@ def initializeRobot():
     if "Work_station" not in RDK_StationNames:
         RDK.AddFile("Work_station.rdk")
     # get a robot
-    robot = RDK.Item('UR5e_Light1', ITEM_TYPE_ROBOT)
-    robot1 = RDK.Item('UR5e_Camera', ITEM_TYPE_ROBOT)
+    robot = RDK.Item('UR5 Light', ITEM_TYPE_ROBOT)
+    robot1 = RDK.Item('UR5 Cam', ITEM_TYPE_ROBOT)
     if not robot.Valid():
         print("No robot in the station. Load a robot first, then run this program.")
         pause(5)
@@ -137,7 +137,7 @@ def moveRobot(robot, key):
 
         # robot.MoveL(new_robot_joints)
 
-def startHemisPath(robot, run):
+def startHemisPath(robot, run, RDK):
     # The goal here is to autogenerate a path in the shape of an hemisphere (with the object in the center),
     # that the robot can follow. We can then change the size of the hemisphere to
     # test from different distances. Furthermore, the lights should always point at the object,
@@ -153,7 +153,7 @@ def startHemisPath(robot, run):
     xyzrpw = [] # List that contains the XYZ Coordinate and Roll Pitch Yaw Coordinates.
     i = 0 # Used for indexing xyzrpw list.
 
-    base_xyz = [500, 0, 0] # Reference frame (Center of Hemisphere)
+    base_xyz = [0, -530, 155] # Reference frame (Center of Hemisphere)
     step = 0.5
 
 # Generating the 3D points for an hemisphere
@@ -170,31 +170,43 @@ def startHemisPath(robot, run):
 #         the pitch and yaw angle and not roll. Furthermore, the found pitch and yaw seems to not
 #         match with what it is supposed to be.
 #
-    for x_it in np.arange(min_x, max_x, 0.1):
+    for x_it in np.arange(max_x, min_x, -0.1):
         for y_it in np.arange(min_y, max_y, step):
             if sqrt(pow(x_it, 2) + pow(y_it, 2)) <= a:
                 try:
                     # Computing the x, y and z coordinates
                     # (we multiply with 50 just to make the hemisphere a bit larger)
-                    z = sqrt(a-pow(x_it,2)-pow(y_it,2))*50
-                    x = x_it*50+500 # We add 500 to move the hemisphere a bit away from origon.
-                    y = y_it*50
+                    z = sqrt(a-pow(x_it,2)-pow(y_it,2))*50+base_xyz[2]
+                    x = x_it*50 + base_xyz[0] # We add 500 to move the hemisphere a bit away from origon.
+                    y = y_it*50 + base_xyz[1]
 
                     # We now compute the vector coordinates.
-                    vec_x = base_xyz[0] - x
-                    vec_y = base_xyz[1] - y
-                    vec_z = z - base_xyz[2]
-
+                    # So far, i have observed that when the x-coordinate og the TCP > base_xyz[0]
+                    # then we must switch around how we compute vec_x and vec_y.
+                    # Although, as the difference between the TCP x-coord and base_xyz[0] becomes less
+                    # so will the accuracy of pointing at the center.
+                    if base_xyz[0] < x:
+                        vec_x = x - base_xyz[0]
+                        vec_y = y-base_xyz[1]
+                    else:
+                        vec_x = base_xyz[0] - x
+                        vec_y = base_xyz[1] - y
+                    #vec_z = z - base_xyz[2]
+                    vec_z = z-base_xyz[2]
                     #We now compute roll, pitch and yaw.
                     rot_x = atan2(vec_z,vec_y)/pi*180  # we have no way of computing roll, so we set it to zero deg.
+                    
+                    rot_x_zero = 0
                     #yaw = np.arcsin(-vec_y)/pi*180 # Another method
                     rot_y = atan2(vec_z,vec_x)/pi*180
 
-                    rot_z = atan2(vec_y, vec_x)/pi*180
-
+                    if base_xyz[0] < x:
+                        rot_z = atan2(vec_y, vec_x)/pi*180+180
+                    else:
+                        rot_z = atan2(vec_y, vec_x)/pi*180
                     xyz.append([x,y,z])
                     # I am not completely sure in which order roll, pitch and yaw should come in
-                    xyzrpw.append([x, y, z, rot_x, rot_y, rot_z])
+                    xyzrpw.append([x, y, z, rot_x_zero, rot_y+90, rot_z]) #We add 90 deg to rot_y so it is the z-axis that points at the center.
                     print(xyzrpw[i])
                     i += 1
                 # Using the double for loop actually results is us trying to find values that exceed
@@ -212,6 +224,12 @@ def startHemisPath(robot, run):
             writer.writerow(pos)
 
     i = 0
+    #tool_cam = RDK.Item("Camera",ITEM_TYPE_TOOL )
+    tool_cam = robot.PoseTool()
+    frame_cam = RDK.Item("Frame 5", ITEM_TYPE_FRAME)
+    #refframe_cam = frame_cam.PoseFrame()
+    #robot.setPoseTool(tool_cam)
+    robot.setPoseFrame(frame_cam)
     # We run the for loop, where we send the coordinates to the robot.
     for pos in xyzrpw:
 
@@ -237,10 +255,11 @@ def startHemisPath(robot, run):
         #new_robot_position = transl(pos)
         #new_robot_position = transl(pos)*rotz(0*pi/180)*roty(rpy[i][1])*
         new_robot_position = xyzrpw_2_pose(pos)
+        #*rotz(rot_x)
         #continue
 
         # calculate the new robot joints
-        new_robot_joints = robot.SolveIK(new_robot_position)
+        new_robot_joints = robot.SolveIK(new_robot_position, tool = tool_cam)
 
         if len(new_robot_joints.tolist()) < 6:
             print("No robot solution!! The new position is too far, out of reach or close to a singularity")
@@ -257,7 +276,8 @@ def startHemisPath(robot, run):
 
         # move the robot joints to the new position
         robot.MoveJ(new_robot_joints)
-        time.sleep(0.3)
+        print(pos)
+        time.sleep(0.5)
         i += 1
 thread = threading.Thread(target=startHemisPath)
 thread.start()
