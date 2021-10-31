@@ -1,4 +1,5 @@
 # This macro will save a time stamp and robot joints each 50 ms
+from math import atan, pi, sqrt
 import threading
 
 from robodk.robodk import *
@@ -153,7 +154,7 @@ def startHemisPath(robot, run, RDK):
     xyzrpw = [] # List that contains the XYZ Coordinate and Roll Pitch Yaw Coordinates.
     i = 0 # Used for indexing xyzrpw list.
 
-    base_xyz = [0, -530, 155] # Reference frame (Center of Hemisphere)
+    inspection_center_xyz = [560, 0, 155] # Reference frame (Center of Hemisphere)
     step = 0.5
 
 # Generating the 3D points for an hemisphere
@@ -174,40 +175,50 @@ def startHemisPath(robot, run, RDK):
         for y_it in np.arange(min_y, max_y, step):
             if sqrt(pow(x_it, 2) + pow(y_it, 2)) <= a:
                 try:
-                    # Computing the x, y and z coordinates
+                    # Computing the x, y and z coordinates of the points in the hemisphere wrt. to the robot frame
                     # (we multiply with 50 just to make the hemisphere a bit larger)
-                    z = sqrt(a-pow(x_it,2)-pow(y_it,2))*50+base_xyz[2]
-                    x = x_it*50 + base_xyz[0] # We add 500 to move the hemisphere a bit away from origon.
-                    y = y_it*50 + base_xyz[1]
+                    z_hemsphe = sqrt(a-pow(x_it,2)-pow(y_it,2))*50+inspection_center_xyz[2]
+                    x_hemsphe = x_it*50 + inspection_center_xyz[0] # We add 500 to move the hemisphere a bit away from origon.
+                    y_hemsphe = y_it*50 + inspection_center_xyz[1]
 
-                    # We now compute the vector coordinates.
-                    # So far, i have observed that when the x-coordinate og the TCP > base_xyz[0]
-                    # then we must switch around how we compute vec_x and vec_y.
-                    # Although, as the difference between the TCP x-coord and base_xyz[0] becomes less
-                    # so will the accuracy of pointing at the center.
-                    if base_xyz[0] < x:
-                        vec_x = x - base_xyz[0]
-                        vec_y = y-base_xyz[1]
-                    else:
-                        vec_x = base_xyz[0] - x
-                        vec_y = base_xyz[1] - y
-                    #vec_z = z - base_xyz[2]
-                    vec_z = z-base_xyz[2]
-                    #We now compute roll, pitch and yaw.
-                    rot_x = atan2(vec_z,vec_y)/pi*180  # we have no way of computing roll, so we set it to zero deg.
+                    ## Compute roll, pitch and yaw of the camera with fixed angles wrt. the robot frame.
+                    # vectors from inspection frame and camera frame
+                    x_vect = inspection_center_xyz[0] - x_hemsphe
+                    y_vect = inspection_center_xyz[1] - y_hemsphe
+                    z_vect = inspection_center_xyz[2] - z_hemsphe
                     
-                    rot_x_zero = 0
-                    #yaw = np.arcsin(-vec_y)/pi*180 # Another method
-                    rot_y = atan2(vec_z,vec_x)/pi*180
-
-                    if base_xyz[0] < x:
-                        rot_z = atan2(vec_y, vec_x)/pi*180+180
+                    if x_vect < 0 and z_vect > 0:
+                        rot_y = atan(z_vect/x_vect)/pi*180
+                    elif x_vect > 0 and z_vect > 0:
+                        rot_y = atan(x_vect/z_vect)/pi*180
+                    elif x_vect > 0 and z_vect < 0:
+                        rot_y = -atan(z_vect/x_vect)/pi*180+180
+                    elif x_vect < 0 and z_vect < 0:
+                        rot_y = atan(x_vect/z_vect)/pi*180+270
                     else:
-                        rot_z = atan2(vec_y, vec_x)/pi*180
-                    xyz.append([x,y,z])
-                    # I am not completely sure in which order roll, pitch and yaw should come in
-                    xyzrpw.append([x, y, z, rot_x_zero, rot_y+90, rot_z]) #We add 90 deg to rot_y so it is the z-axis that points at the center.
-                    print(xyzrpw[i])
+                        print("computiation fail in fixed x angle between camera and inspection object")
+
+                    if y_vect < 0 and z_vect > 0:
+                        rot_x = atan(z_vect/y_vect)/pi*180
+                    elif y_vect > 0 and z_vect > 0:
+                        rot_x = atan(y_vect/z_vect)/pi*180
+                    elif y_vect > 0 and z_vect < 0:
+                        rot_x = atan(z_vect/y_vect)/pi*180+180 #fast
+                    elif y_vect < 0 and z_vect < 0:
+                        rot_x = atan(z_vect/y_vect)/pi*180
+                    else:
+                        print("computiation fail in fixed x angle between camera and inspection object")
+                    
+                    rot_z = 0
+                    rot_y = rot_y - 90
+                    rot_x = 0#rot_x + 90
+
+                    xyz.append([x_hemsphe,y_hemsphe,z_hemsphe])
+                    
+                    # Fixed rotation
+                    pose = transl(x_hemsphe,y_hemsphe,z_hemsphe)*rotz(rot_z*pi/180)*roty(rot_y*pi/180)*rotx(rot_x*pi/180)
+                    
+                    xyzrpw.append(pose)
                     i += 1
                 # Using the double for loop actually results is us trying to find values that exceed
                 # the hemipshere, the try except func prevents the program from stopping, when this happens.
@@ -218,7 +229,7 @@ def startHemisPath(robot, run, RDK):
         step = -step
     # We now save all the coordinates in a csv file, which can me imported
     # into RoboDK by simply dragging it into the program.
-    with open('test.csv', 'w', encoding='UTF8') as f:
+    with open('hemisphere.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
         for pos in xyz:
             writer.writerow(pos)
@@ -226,7 +237,7 @@ def startHemisPath(robot, run, RDK):
     i = 0
     #tool_cam = RDK.Item("Camera",ITEM_TYPE_TOOL )
     tool_cam = robot.PoseTool()
-    frame_cam = RDK.Item("Frame 5", ITEM_TYPE_FRAME)
+    frame_cam = RDK.Item("Camera", ITEM_TYPE_FRAME)
     #refframe_cam = frame_cam.PoseFrame()
     #robot.setPoseTool(tool_cam)
     robot.setPoseFrame(frame_cam)
@@ -254,7 +265,7 @@ def startHemisPath(robot, run, RDK):
         # calculate the new robot position
         #new_robot_position = transl(pos)
         #new_robot_position = transl(pos)*rotz(0*pi/180)*roty(rpy[i][1])*
-        new_robot_position = xyzrpw_2_pose(pos)
+        new_robot_position = pos
         #*rotz(rot_x)
         #continue
 
@@ -276,8 +287,145 @@ def startHemisPath(robot, run, RDK):
 
         # move the robot joints to the new position
         robot.MoveJ(new_robot_joints)
-        print(pos)
-        time.sleep(0.5)
+        time.sleep(0.01)
         i += 1
 thread = threading.Thread(target=startHemisPath)
 thread.start()
+
+def homePose(robot, run, RDK):
+    #left button
+    x_home = 460
+    y_home = 0
+    z_home = 500
+    rot_x_home = 0
+    rot_y_home = 0
+    rot_z_home = 0
+
+    xyzrpw = (transl(x_home,y_home,z_home)*rotz(rot_z_home*pi/180)*roty(rot_y_home*pi/180)*rotx(rot_x_home*pi/180)) #Hope position pose
+
+    # set which frame is tool frame
+    tool_cam = robot.PoseTool()
+    frame_cam = RDK.Item("Camera", ITEM_TYPE_FRAME)
+    robot.setPoseFrame(frame_cam)
+
+    # get the robot joints
+    robot_joints = robot.Joints()
+
+    # get the robot position from the joints (calculate forward kinematics)
+    robot_position = robot.SolveFK(robot_joints)
+
+    # get the robot configuration (robot joint state)
+    robot_config = robot.JointsConfig(robot_joints)
+
+    # calculate the new robot position
+    new_robot_position = xyzrpw
+
+    # calculate the new robot joints
+    home_robot_joints = robot.SolveIK(new_robot_position, tool = tool_cam)
+
+    if len(home_robot_joints.tolist()) < 6:
+        print("No robot solution!! The new position is too far, out of reach or close to a singularity")
+
+    # calculate the robot configuration for the new joints
+    new_robot_config = robot.JointsConfig(home_robot_joints)
+
+    if robot_config[0] != new_robot_config[0] or robot_config[1] != new_robot_config[1] or robot_config[2] != \
+            new_robot_config[2]:
+        print("Warning!! Robot configuration changed!! This will lead to unextected movements!")
+        print(robot_config)
+        print(new_robot_config)
+
+    # move the robot joints to the new position
+    robot.MoveJ(home_robot_joints)
+
+def homePose2(robot, run, RDK):
+    #left button
+    x_home = 460
+    y_home = 0
+    z_home = 500
+    rot_x_home = -90
+    rot_y_home = -90
+    rot_z_home = 0
+
+    xyzrpw = (transl(x_home,y_home,z_home)*rotz(rot_z_home*pi/180)*roty(rot_y_home*pi/180)*rotx(rot_x_home*pi/180)) #Hope position pose
+
+    # set which frame is tool frame
+    tool_cam = robot.PoseTool()
+    frame_cam = RDK.Item("Camera", ITEM_TYPE_FRAME)
+    robot.setPoseFrame(frame_cam)
+
+    # get the robot joints
+    robot_joints = robot.Joints()
+
+    # get the robot position from the joints (calculate forward kinematics)
+    robot_position = robot.SolveFK(robot_joints)
+
+    # get the robot configuration (robot joint state)
+    robot_config = robot.JointsConfig(robot_joints)
+
+    # calculate the new robot position
+    new_robot_position = xyzrpw
+
+    # calculate the new robot joints
+    home_robot_joints = robot.SolveIK(new_robot_position, tool = tool_cam)
+
+    if len(home_robot_joints.tolist()) < 6:
+        print("No robot solution!! The new position is too far, out of reach or close to a singularity")
+
+    # calculate the robot configuration for the new joints
+    new_robot_config = robot.JointsConfig(home_robot_joints)
+
+    if robot_config[0] != new_robot_config[0] or robot_config[1] != new_robot_config[1] or robot_config[2] != \
+            new_robot_config[2]:
+        print("Warning!! Robot configuration changed!! This will lead to unextected movements!")
+        print(robot_config)
+        print(new_robot_config)
+
+    # move the robot joints to the new position
+    robot.MoveJ(home_robot_joints)
+
+def homePose3(robot, run, RDK):
+    #left button
+    x_home = 460
+    y_home = 0
+    z_home = 500
+    rot_x_home = -90
+    rot_y_home = -90
+    rot_z_home = 0
+
+    xyzrpw = (transl(x_home,y_home,z_home)*rotx(rot_x_home*pi/180)*roty(rot_y_home*pi/180)*rotz(rot_z_home*pi/180)) #Hope position pose
+
+    # set which frame is tool frame
+    tool_cam = robot.PoseTool()
+    frame_cam = RDK.Item("Camera", ITEM_TYPE_FRAME)
+    robot.setPoseFrame(frame_cam)
+
+    # get the robot joints
+    robot_joints = robot.Joints()
+
+    # get the robot position from the joints (calculate forward kinematics)
+    robot_position = robot.SolveFK(robot_joints)
+
+    # get the robot configuration (robot joint state)
+    robot_config = robot.JointsConfig(robot_joints)
+
+    # calculate the new robot position
+    new_robot_position = xyzrpw
+
+    # calculate the new robot joints
+    home_robot_joints = robot.SolveIK(new_robot_position, tool = tool_cam)
+
+    if len(home_robot_joints.tolist()) < 6:
+        print("No robot solution!! The new position is too far, out of reach or close to a singularity")
+
+    # calculate the robot configuration for the new joints
+    new_robot_config = robot.JointsConfig(home_robot_joints)
+
+    if robot_config[0] != new_robot_config[0] or robot_config[1] != new_robot_config[1] or robot_config[2] != \
+            new_robot_config[2]:
+        print("Warning!! Robot configuration changed!! This will lead to unextected movements!")
+        print(robot_config)
+        print(new_robot_config)
+
+    # move the robot joints to the new position
+    robot.MoveJ(home_robot_joints)
