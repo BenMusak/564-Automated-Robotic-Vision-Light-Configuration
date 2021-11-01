@@ -154,7 +154,7 @@ def startHemisPath(robot, run, RDK):
     xyzrpw = [] # List that contains the XYZ Coordinate and Roll Pitch Yaw Coordinates.
     i = 0 # Used for indexing xyzrpw list.
 
-    inspection_center_xyz = [560, 0, 155] # Reference frame (Center of Hemisphere)
+    inspection_center_xyz = [400, 0, 155] # Reference frame (Center of Hemisphere)
     step = 0.5
 
 # Generating the 3D points for an hemisphere
@@ -182,7 +182,7 @@ def startHemisPath(robot, run, RDK):
                     y_hemsphe = y_it*50 + inspection_center_xyz[1]
 
                     ## Compute roll, pitch and yaw of the camera with fixed angles wrt. the robot frame.
-                    # vectors from inspection frame and camera frame
+                    # vectors from camera frame to inspection frame
                     x_vect = inspection_center_xyz[0] - x_hemsphe
                     y_vect = inspection_center_xyz[1] - y_hemsphe
                     z_vect = inspection_center_xyz[2] - z_hemsphe
@@ -198,27 +198,32 @@ def startHemisPath(robot, run, RDK):
                     else:
                         print("computiation fail in fixed x angle between camera and inspection object")
 
-                    if y_vect < 0 and z_vect > 0:
+                    if y_vect > 0 and z_vect < 0:
+                        rot_x = atan(y_vect/(-sqrt(pow(z_vect,2)+pow(x_vect,2))))/pi*180-90
+                    elif y_vect < 0 and z_vect < 0:
+                        rot_x = -atan((-sqrt(pow(z_vect,2)+pow(x_vect,2)))/y_vect)/pi*180
+                    elif y_vect < 0 and z_vect > 0:
                         rot_x = atan(z_vect/y_vect)/pi*180
                     elif y_vect > 0 and z_vect > 0:
                         rot_x = atan(y_vect/z_vect)/pi*180
-                    elif y_vect > 0 and z_vect < 0:
-                        rot_x = atan(z_vect/y_vect)/pi*180+180 #fast
-                    elif y_vect < 0 and z_vect < 0:
-                        rot_x = atan(z_vect/y_vect)/pi*180
                     else:
                         print("computiation fail in fixed x angle between camera and inspection object")
-                    
+
                     rot_z = 0
-                    rot_y = rot_y - 90
-                    rot_x = 0#rot_x + 90
+                    rot_y1 = rot_y - 90
+                    rot_x1 = 0
 
                     xyz.append([x_hemsphe,y_hemsphe,z_hemsphe])
                     
                     # Fixed rotation
-                    pose = transl(x_hemsphe,y_hemsphe,z_hemsphe)*rotz(rot_z*pi/180)*roty(rot_y*pi/180)*rotx(rot_x*pi/180)
+                    pose_y_rot = transl(x_hemsphe,y_hemsphe,z_hemsphe)*rotz(rot_z*pi/180)*roty(rot_y1*pi/180)*rotx(rot_x1*pi/180)
+
+                    rot_y2 = 0
+                    rot_x2 = rot_x + 90
+
+                    pose_final_rot = pose_y_rot * rotx(rot_x2*pi/180)*roty(rot_y2*pi/180)*rotz(rot_z*pi/180)
                     
-                    xyzrpw.append(pose)
+                    xyzrpw.append(pose_final_rot)
                     i += 1
                 # Using the double for loop actually results is us trying to find values that exceed
                 # the hemipshere, the try except func prevents the program from stopping, when this happens.
