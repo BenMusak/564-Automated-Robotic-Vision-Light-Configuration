@@ -29,7 +29,8 @@ AVAILABLE_COMMANDS = {
     'Reset': RESET
 }
 
-robot, robot1, RDK = rDK.initializeRobot() # This function returns two robot items, so we can control them individually.
+#robot, robot1, RDK = rDK.initializeRobot() # This function returns two robot items, so we can control them individually.
+
 #/<cmd>
 @app.route('/process', methods=['POST'])
 def process():
@@ -39,8 +40,8 @@ def process():
         #x_newvalue += int(request.form['volume'])
         print("RIGHT")
         #rDK.moveRobot(robot1, 75)
-        run[0] = True
-        rDK.startHemisPath(robot1, run, RDK)
+        #run[0] = True
+        #rDK.startHemisPath(robot1, run, RDK)
     elif cmd == 'LEFT':
         #x_newvalue += -int(request.form['volume'])
         print("LEFT")
@@ -48,20 +49,20 @@ def process():
         run[0] = False
     elif cmd == "UP":
         print("UP")
-        rDK.moveRobot(robot1, 72)
+        #rDK.moveRobot(robot1, 72)
     elif cmd == 'DOWN':
         print("DOWN")
-        rDK.moveRobot(robot1, 80)
+        #rDK.moveRobot(robot1, 80)
     elif cmd == 'RAISE':
         print("RAISE")
-        rDK.moveRobot(robot1, 113)
+        #rDK.moveRobot(robot1, 113)
     elif cmd == 'LOWER':
         print("LOWER")
-        rDK.moveRobot(robot1, 97)
+        #rDK.moveRobot(robot1, 97)
     #response = "Moving {}".format(cmd.capitalize())
     if cmd == 'HOME':
         #response = BR.connect()
-        rDK.startHemisPath(robot, run, RDK)
+        #rDK.startHemisPath(robot, run, RDK)
         ih.getURLImage("subfolder1", "img", str(i))
         i += 1
         x_newvalue = 0
@@ -100,6 +101,7 @@ def folder():
         folders=folders,
         images=images)
 
+
 #Route for moving to the image-viewer page, which depends on the folder nr. that the user clicks on.
 @app.route('/imageViewer/<index>',methods = ['GET', 'POST'])
 def img(index):
@@ -111,3 +113,13 @@ def img(index):
         folders=folders,
         chosenFolder=index,
         images=images)
+
+#Route for changing parameters and starting tests.
+@app.route('/parameters', methods = ['GET', 'POST'])
+def parameters():
+
+    #We now return the folder page and all the subfolder and filenames.
+    return render_template(
+        #"test.html",
+        "parameters.html"
+        )
