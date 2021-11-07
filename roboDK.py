@@ -1,6 +1,7 @@
 # This macro will save a time stamp and robot joints each 50 ms
 from math import atan, pi, sqrt
 import threading
+from tkinter import EXCEPTION
 
 from robodk.robodk import *
 from robolink import *      # API to communicate with RoboDK for simulation and offline/online programming
@@ -61,7 +62,6 @@ def initializeRobot():
 
         # This will set to run the API programs on the robot and the simulator (online programming)
         RDK.setRunMode(RUNMODE_RUN_ROBOT)
-
 
     print('Using robot: %s' % robot.Name())
     print('Use the arrows (left, right, up, down), Q and A keys to move the robot')
@@ -139,7 +139,7 @@ def moveRobot(robot, key):
 
         # robot.MoveL(new_robot_joints)
 
-def startHemisPath(robot, run, RDK):
+def generateHemisPath():
     # The goal here is to autogenerate a path in the shape of an hemisphere (with the object in the center),
     # that the robot can follow. We can then change the size of the hemisphere to
     # test from different distances. Furthermore, the lights should always point at the object,
@@ -155,8 +155,8 @@ def startHemisPath(robot, run, RDK):
     xyzrpw = [] # List that contains the XYZ Coordinate and Roll Pitch Yaw Coordinates.
     i = 0 # Used for indexing xyzrpw list.
 
-    inspection_center_xyz = [400, 0, 155] # Reference frame (Center of Hemisphere)
-    step = 0.5
+    inspection_center_xyz = [-174.655, -343.654, 155] # Reference frame (Center of Hemisphere)
+    step = 4
 
 # Generating the 3D points for an hemisphere
 # We iterate over all y-coordinate before we change to new x-coordinate, thereafter
@@ -197,7 +197,7 @@ def startHemisPath(robot, run, RDK):
                     elif x_vect < 0 and z_vect < 0:
                         rot_y = atan(x_vect/z_vect)/pi*180+270
                     else:
-                        print("computiation fail in fixed x angle between camera and inspection object")
+                        print("computiation fail in y angle between camera and inspection object")
 
                     if y_vect > 0 and z_vect < 0:
                         rot_x = atan(y_vect/(-sqrt(pow(z_vect,2)+pow(x_vect,2))))/pi*180-90
@@ -208,20 +208,23 @@ def startHemisPath(robot, run, RDK):
                     elif y_vect > 0 and z_vect > 0:
                         rot_x = atan(y_vect/z_vect)/pi*180
                     else:
-                        print("computiation fail in fixed x angle between camera and inspection object")
+                        print("computiation fail in x angle between camera and inspection object")
 
                     rot_z = 0
                     rot_y1 = rot_y - 90
                     rot_x1 = 0
 
-                    xyz.append([x_hemsphe,y_hemsphe,z_hemsphe])
+                    pathPoints = transl(x_hemsphe,y_hemsphe,z_hemsphe)*rotz(0*pi/180)*roty(0*pi/180)*rotx(0*pi/180)
+
+                    xyz.append([pathPoints[0,3],pathPoints[1,3],pathPoints[2,3]])
                     
                     # Fixed rotation
-                    pose_y_rot = transl(x_hemsphe,y_hemsphe,z_hemsphe)*rotz(rot_z*pi/180)*roty(rot_y1*pi/180)*rotx(rot_x1*pi/180)
+                    pose_y_rot = transl([pathPoints[0,3],pathPoints[1,3],pathPoints[2,3]])*rotz(rot_z*pi/180)*roty(rot_y1*pi/180)*rotx(rot_x1*pi/180)
 
                     rot_y2 = 0
                     rot_x2 = rot_x + 90
 
+                    # Euler rotation
                     pose_final_rot = pose_y_rot * rotx(rot_x2*pi/180)*roty(rot_y2*pi/180)*rotz(rot_z*pi/180)
                     
                     xyzrpw.append(pose_final_rot)
@@ -235,11 +238,16 @@ def startHemisPath(robot, run, RDK):
         step = -step
     # We now save all the coordinates in a csv file, which can me imported
     # into RoboDK by simply dragging it into the program.
+    print("Number of points in hemossphere: ",len(xyz))
     with open('Hemisphere.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
         for pos in xyz:
             writer.writerow(pos)
+    path = xyzrpw
+    return path
 
+def runPath(path, RDK, robot, run, runCollisionFree):
+    #RDK.setCollisionActive(check_state=COLLISION_ON)
     i = 0
     #tool_cam = RDK.Item("Camera",ITEM_TYPE_TOOL )
     tool_cam = robot.PoseTool()
@@ -247,8 +255,10 @@ def startHemisPath(robot, run, RDK):
     #refframe_cam = frame_cam.PoseFrame()
     #robot.setPoseTool(tool_cam)
     robot.setPoseFrame(frame_cam)
+    collisionFreePath = []
+
     # We run the for loop, where we send the coordinates to the robot.
-    for pos in xyzrpw:
+    for pos in path:
 
         # Stop the process. Here Run simulates a pointer.
         if run[0] != True:
@@ -291,17 +301,33 @@ def startHemisPath(robot, run, RDK):
             print(robot_config)
             print(new_robot_config)
 
-        
-        # move the robot joints to the new position
+        #move the robot joints to the new position
         robot.MoveJ(new_robot_joints)
-        time.sleep(0.01)
-        i += 1
+        time.sleep(0.5)
 
-thread = threading.Thread(target=startHemisPath)
+        # Check for collisions in path
+        if runCollisionFree == False:
+            # Check for collisions between two points
+            collision = robot.MoveJ_Test(robot_joints, new_robot_joints, minstep_deg=-1)
+            if collision == 0:
+                if i == 0:
+                    collisionFreePath[i] = robot_joints  
+                collisionFreePath[i] = new_robot_joints
+                i += 1
+            robot.MoveJ(robot_joints)
+            return collisionFreePath
+
+        # Check run collision free path
+        if runCollisionFree == True:
+            #move the robot joints to the new position
+            robot.MoveJ(collisionFreePath[i])
+            i += 1
+            time.sleep(0.5)
+
+thread = threading.Thread(target=runPath)
 thread.start()
 
 def homePose(robot, run, RDK):
-    #left button
     x_home = 460
     y_home = 0
     z_home = 500
@@ -313,7 +339,7 @@ def homePose(robot, run, RDK):
 
     # set which frame is tool frame
     tool_cam = robot.PoseTool()
-    frame_cam = RDK.Item("Camera", ITEM_TYPE_FRAME)
+    frame_cam = RDK.Item("BAR_LIGHT", ITEM_TYPE_FRAME)
     robot.setPoseFrame(frame_cam)
 
     # get the robot joints

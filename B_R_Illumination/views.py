@@ -29,7 +29,7 @@ AVAILABLE_COMMANDS = {
     'Reset': RESET
 }
 
-robot, robot1, RDK = rDK.initializeRobot() # This function returns two robot items, so we can control them individually.
+robotLight, robotCam, RDK = rDK.initializeRobot() # This function returns two robot items, so we can control them individually.
 #/<cmd>
 @app.route('/process', methods=['POST'])
 def process():
@@ -40,27 +40,29 @@ def process():
         print("RIGHT")
         #rDK.moveRobot(robot1, 75)
         run[0] = True
-        rDK.startHemisPath(robot1, run, RDK)
+        HemisPath = rDK.generateHemisPath()
+        rDK.runPath(HemisPath, RDK, robotCam, run, runCollisionFree = False)
+        rDK.runPath(HemisPath, RDK, robotCam, run, runCollisionFree = True)
     elif cmd == 'LEFT':
         #x_newvalue += -int(request.form['volume'])
         print("LEFT")
         #rDK.moveRobot(robot1, 77)
-        rDK.homePose(robot1, run, RDK)
+        rDK.homePose(robotCam, run, RDK)
         run[0] = False
     elif cmd == "UP":
         print("UP")
         #rDK.moveRobot(robot1, 72)
-        rDK.homePose2(robot1, run, RDK)
+        rDK.homePose2(robotCam, run, RDK)
     elif cmd == 'DOWN':
         print("DOWN")
         #rDK.moveRobot(robot1, 80)
-        rDK.homePose3(robot1, run, RDK)
+        rDK.homePose3(robotCam, run, RDK)
     elif cmd == 'RAISE':
         print("RAISE")
-        rDK.moveRobot(robot1, 113)
+        rDK.moveRobot(robotCam, 113)
     elif cmd == 'LOWER':
         print("LOWER")
-        rDK.moveRobot(robot1, 97)
+        rDK.moveRobot(robotCam, 97)
     #response = "Moving {}".format(cmd.capitalize())
     if cmd == 'HOME':
         #response = BR.connect()
