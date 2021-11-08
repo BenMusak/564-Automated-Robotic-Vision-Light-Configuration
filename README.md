@@ -15,6 +15,7 @@ Setup the rules here
 - All files that only relates to your own pc should never be included in commits, make sure to add them to gitignore!.
 - All custom environments should be added to gitignore.
 - If you did not create the branch (or if it the main branch), please to not make direct commits, only pull requests.
+- The code sholud follow the topolegy overview
 
 # Tasks 
 - [ ] Update HTML files with appropriate layout. 
@@ -26,3 +27,10 @@ Setup the rules here
 
 # Links
 Further information about the Flask framework can be found here: https://code.visualstudio.com/docs/python/tutorial-flask 
+
+# Related projects
+The program client/server part related to this project can be found [here](https://github.com/kasperfg16/Automation-studio-P5-project)
+
+# Topology overview
+The topology can be seen and edited [here](https://github.com/kasperfg16/Automation-studio-P5-project)
+
