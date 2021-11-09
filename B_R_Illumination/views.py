@@ -36,6 +36,72 @@ AVAILABLE_COMMANDS = {
 def process():
     global x_newvalue, y_newvalue, z_newvalue, slide_value, response, i, run
     cmd = request.form['name']
+
+    try:
+        camera = request.form['camera']
+        print("Camera = " + camera)
+    except:
+        camera = "off"
+        print("Camera = " + camera)
+
+    try:
+        cameraradio = request.form['cameraradio']
+        print("Camera light color = " + cameraradio)
+    except:
+        if camera != "off":
+            print("No color have been chosen for Camera light")
+
+    try:
+        barlight1 = request.form['barlight1']
+        print("Lightbar = " + barlight1)
+    except:
+        barlight1 = "off"
+        print("Lightbar = " + barlight1)
+    
+    try:
+        barlight1radio = request.form['barlight1radio']
+        print("Lightbar = " + barlight1radio)
+    except:
+        if barlight1 != "off":
+            print("No color have been chosen for lightbar")
+
+    try:
+        backlight = request.form['backlight']
+        print("Backlight = " + backlight)
+    except:
+        backlight = "off"
+        print("Backlight = " + backlight)
+
+    try:
+        backlight1radio = request.form['backlightradio']
+        print("Backlight color = " + backlight1radio)
+    except:
+        if backlight != "off":
+            print("No color have been chosen for backlight")
+
+    try:
+        irfilter = request.form['irfilter']
+        print("irfilter = " + irfilter)
+    except:
+        irfilter = "off"
+        print("irfilter = " + irfilter)
+
+    try:
+        obj_width = request.form['obj_width']
+        obj_length = request.form['obj_length']
+        obj_height = request.form['obj_height']
+        print("Object width = " + obj_width + "  Object length = " + obj_length + "  Object height = " + obj_height)
+    except:
+        obj_height = 0
+        obj_length = 0
+        obj_width = 0
+    
+    try:
+        img_amount = request.form['img_amount']
+        print("Image amount = " + img_amount)
+    except:
+        img_amount = 0
+
     if cmd == 'RIGHT':
         #x_newvalue += int(request.form['volume'])
         print("RIGHT")
@@ -46,7 +112,7 @@ def process():
         #x_newvalue += -int(request.form['volume'])
         print("LEFT")
         #rDK.moveRobot(robot1, 77)
-        run[0] = False
+        #run[0] = False
     elif cmd == "UP":
         print("UP")
         #rDK.moveRobot(robot1, 72)
@@ -71,12 +137,9 @@ def process():
     #Save slider position
     #if request.form:
         #slide_value = request.form['volume']
-    response = "Successfully moved the robot " + cmd
+        response = "Successfully moved the robot " + cmd
     # ser.write(camera_command)
     return jsonify({'output' : response})
-
-
-
 
 #Normal route for returning back to the home-page
 @app.route('/')
