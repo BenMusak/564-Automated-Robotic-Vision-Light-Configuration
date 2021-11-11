@@ -8,7 +8,8 @@ from B_R_Illumination import app
 import BRClient as BR
 import folderHandler as fh
 import imageHandler as ih
-import roboDK as rDK
+import rosbridge as rb
+#import roboDK as rDK
 slide_value = 10
 x_newvalue = 0
 y_newvalue = 0
@@ -108,6 +109,9 @@ def process():
         #rDK.moveRobot(robot1, 75)
         #run[0] = True
         #rDK.startHemisPath(robot1, run, RDK)
+        rb.startROS_Connect()
+        #tutorial = rt.MoveGroupPythonInterfaceTutorial()
+        #tutorial.go_to_pose_goal()
     elif cmd == 'LEFT':
         #x_newvalue += -int(request.form['volume'])
         print("LEFT")
