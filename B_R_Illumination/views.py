@@ -3,6 +3,7 @@ Routes and views for the flask application.
 """
 
 from datetime import datetime
+from os import error
 from flask import render_template, request, jsonify, json
 from B_R_Illumination import app
 import BRClient as BR
@@ -10,33 +11,18 @@ import folderHandler as fh
 import imageHandler as ih
 import rosbridge as rb
 #import roboDK as rDK
-slide_value = 10
-x_newvalue = 0
-y_newvalue = 0
-z_newvalue = 120
-response = "hello"
+
+response = ""
 folders = []
 images =[]
-i = 0
-
-
+test_state = False
 run = [True] # Used for stopping the RoboDK threads.We can simulate them using a list, since pointers do not exist in python.
-LEFT, RIGHT, UP, DOWN, RESET = "left", "right", "up", "down", "reset"
-AVAILABLE_COMMANDS = {
-    'Left': LEFT,
-    'Right': RIGHT,
-    'Up': UP,
-    'Down': DOWN,
-    'Reset': RESET
-}
 
-#robot, robot1, RDK = rDK.initializeRobot() # This function returns two robot items, so we can control them individually.
-
-#/<cmd>
 @app.route('/process', methods=['POST'])
 def process():
-    global x_newvalue, y_newvalue, z_newvalue, slide_value, response, i, run
-    cmd = request.form['name']
+    global x_newvalue, y_newvalue, z_newvalue, slide_value, response, i, run, test_state
+    error_msg = ""
+    error_state = False
 
     try:
         camera = request.form['camera']
@@ -46,13 +32,6 @@ def process():
         print("Camera = " + camera)
 
     try:
-        cameraradio = request.form['cameraradio']
-        print("Camera light color = " + cameraradio)
-    except:
-        if camera != "off":
-            print("No color have been chosen for Camera light")
-
-    try:
         barlight1 = request.form['barlight1']
         print("Lightbar = " + barlight1)
     except:
@@ -60,32 +39,22 @@ def process():
         print("Lightbar = " + barlight1)
     
     try:
-        barlight1radio = request.form['barlight1radio']
-        print("Lightbar = " + barlight1radio)
-    except:
-        if barlight1 != "off":
-            print("No color have been chosen for lightbar")
-
-    try:
         backlight = request.form['backlight']
         print("Backlight = " + backlight)
     except:
         backlight = "off"
         print("Backlight = " + backlight)
 
-    try:
-        backlight1radio = request.form['backlightradio']
-        print("Backlight color = " + backlight1radio)
-    except:
-        if backlight != "off":
-            print("No color have been chosen for backlight")
-
-    try:
-        irfilter = request.form['irfilter']
-        print("irfilter = " + irfilter)
-    except:
-        irfilter = "off"
-        print("irfilter = " + irfilter)
+    if backlight == "on" or barlight1 == "on" or camera == "on":
+        try:
+            lightColor = request.form['backlightradio']
+            print("The light color = " + lightColor)
+        except:
+            if backlight != "off":
+                error_msg = error_msg + " No color have been chosen for the light. \n"
+    else:
+        lightColor = "off"
+        print("The color = " + lightColor)
 
     try:
         obj_width = request.form['obj_width']
@@ -93,57 +62,49 @@ def process():
         obj_height = request.form['obj_height']
         print("Object width = " + obj_width + "  Object length = " + obj_length + "  Object height = " + obj_height)
     except:
-        obj_height = 0
-        obj_length = 0
-        obj_width = 0
+        obj_height = None
+        obj_length = None
+        obj_width = None
+    
+    if obj_height.isdigit():
+        print("Value is all good.")
+    else:
+        error_msg = error_msg + " Height contains invalid charachters or is empty. \n"
+    if obj_length.isdigit():
+        print("Value is all good.")
+    else:
+        error_msg = error_msg + " Length contains invalid charachters or is empty. \n"
+    if obj_width.isdigit():
+        print("Value is all good.")
+    else:
+        error_msg = error_msg + " Width contains invalid charachters or is empty. \n"
     
     try:
         img_amount = request.form['img_amount']
         print("Image amount = " + img_amount)
     except:
-        img_amount = 0
-
-    if cmd == 'RIGHT':
-        #x_newvalue += int(request.form['volume'])
-        print("RIGHT")
-        #rDK.moveRobot(robot1, 75)
-        #run[0] = True
-        #rDK.startHemisPath(robot1, run, RDK)
-        rb.startROS_Connect()
-        #tutorial = rt.MoveGroupPythonInterfaceTutorial()
-        #tutorial.go_to_pose_goal()
-    elif cmd == 'LEFT':
-        #x_newvalue += -int(request.form['volume'])
-        print("LEFT")
-        #rDK.moveRobot(robot1, 77)
-        #run[0] = False
-    elif cmd == "UP":
-        print("UP")
-        #rDK.moveRobot(robot1, 72)
-    elif cmd == 'DOWN':
-        print("DOWN")
-        #rDK.moveRobot(robot1, 80)
-    elif cmd == 'RAISE':
-        print("RAISE")
-        #rDK.moveRobot(robot1, 113)
-    elif cmd == 'LOWER':
-        print("LOWER")
-        #rDK.moveRobot(robot1, 97)
-    #response = "Moving {}".format(cmd.capitalize())
-    if cmd == 'HOME':
-        #response = BR.connect()
-        #rDK.startHemisPath(robot, run, RDK)
-        ih.getURLImage("subfolder1", "img", str(i))
-        i += 1
-        x_newvalue = 0
-        y_newvalue = 0
-        z_newvalue = 120
-    #Save slider position
-    #if request.form:
-        #slide_value = request.form['volume']
-        response = "Successfully moved the robot " + cmd
-    # ser.write(camera_command)
-    return jsonify({'output' : response})
+        img_amount = None
+    
+    if img_amount.isdigit():
+        print("Value is all good.")
+    else:
+        error_msg = error_msg + " Image amount contains invalid charachters or is empty. \n"
+    
+    #rb.startROS_Connect()
+    #response = BR.connect()
+    #ih.getURLImage("subfolder1", "img", str(i))
+    if error_msg =="" and test_state == False:
+        print("No errors")
+        response = "Successfully started the test"
+        error_state = False
+        test_state = True
+    elif test_state:
+        response = "Test is already running."
+        error_state = True
+    else:
+        response = error_msg
+        error_state = True
+    return jsonify({'output' : response, 'error_state' : error_state})
 
 #Normal route for returning back to the home-page
 @app.route('/')
@@ -161,7 +122,7 @@ def home():
 def folder():
     (folders, images) = fh.getSubFolders()
 
-    #We now return the folder page and all the subfolder and filenames.
+    #We now return the folder page and all the subfolders and filenames.
     return render_template(
         #"test.html",
         "folderViewer.html",
@@ -173,7 +134,7 @@ def folder():
 @app.route('/imageViewer/<index>',methods = ['GET', 'POST'])
 def img(index):
     (folders, images) = fh.getSubFolders() #We get list of subfolders and images in subfolders.
-    
+    print(folders, images)
     #We now return the image-viewer page and the three necessary variable for determining which subfolder have been chosen.
     return render_template(
         "imageViewer.html",
