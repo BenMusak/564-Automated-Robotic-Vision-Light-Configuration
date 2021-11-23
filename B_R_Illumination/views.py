@@ -24,6 +24,8 @@ def process():
     error_msg = ""
     error_state = False
 
+    rb.startROS_Connect()
+    
     try:
         camera = request.form['camera']
         print("Camera = " + camera)

@@ -1,35 +1,39 @@
 import roslibpy
-import time
-import numpy as np
+import roslibpy.actionlib
+
+
 
 def startROS_Connect():
     client = roslibpy.Ros(host='localhost', port=9090)
     client.run()
     
+    action_client = roslibpy.actionlib.ActionClient(client,'/Robot_position_msg','messages/posAction')
+
+
+
     #talker_turtle = roslibpy.Topic(client, '/turtle1/cmd_vel', 'geometry_msgs/Twist')
     #talker_robot = roslibpy.Topic(client, '/move_group/cmd_vel', 'geometry_msgs/Pose')
-    service = roslibpy.Service(client, '/add_two_ints', 'beginner_tutorials/AddTwoInts')
-    sumint = {
-        "a" : 5,
-        "b" : 5
+    # service = roslibpy.Service(client, '/add_two_ints', 'beginner_tutorials/AddTwoInts')
+    goalMsg = {
+        "x" : 5,
+        "y" : 5,
+        "z" : 5,
+        "rotx" : 5,
+        "roty" : 5,
+        "rotz" : 5,
     }
     
-    request = roslibpy.ServiceRequest(sumint)
-    Twist = {
-        "linear" : {"x": 100.0, "y" : 0.0, "z": 0.0},
-        "angular" : {"x": 0.0, "y": 0.0, "z": 100.5}
-    }
-    Pose = {
-        "orientation" :{"x": 0.0, "y": 0.0, "z": 0.0, "w": 1.0},
-        "position" : {"x": 0.4, "y":0.1, "z": 0.4}
-    }
+    goal = roslibpy.actionlib.Goal(action_client, roslibpy.Message(goalMsg))
 
-    print('Calling service...')
-    result = service.call(request)
-    print('Service response: {}'.format(result))
+    goal.on('feedback', lambda f: print(f['sequence']))
 
-    client.terminate()
+    goal.send()
 
+    #result = goal.wait(10)
+    
+    action_client.dispose()
+
+    #print('Result: {}'.format(result['sequence']))
     #while client.is_connected:
         #msg = roslibpy.Message(Twist)
         #talker.publish(roslibpy.Message({'linear' : vec3}))
@@ -50,5 +54,3 @@ def startROS_Connect():
     #print('Calling service...')
     #result = service.call(request)
     #print('Service response: {}'.format(result['loggers']))
-
-    client.terminate()
