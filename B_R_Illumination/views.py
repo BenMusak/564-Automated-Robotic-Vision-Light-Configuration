@@ -47,7 +47,7 @@ def process():
 
     if backlight == "on" or barlight1 == "on" or camera == "on":
         try:
-            lightColor = request.form['backlightradio']
+            lightColor = request.form['lightradio']
             print("The light color = " + lightColor)
         except:
             if backlight != "off":

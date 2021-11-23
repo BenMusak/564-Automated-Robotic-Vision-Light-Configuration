@@ -15,7 +15,7 @@
 
   <div class="form-check form-switch form-switch-md">
     <input class="form-check-input" type="checkbox" name="Barlight1" id="Barlight1" data-bs-toggle="collapse"  aria-expanded="false" value="on">
-    <label class="form-check-label" for="Barlight1">Lightbar 1</label>
+    <label class="form-check-label" for="Barlight1">Light bar</label>
   </div>
 
   <div class="form-check form-switch form-switch-md">
@@ -25,19 +25,19 @@
   <div class="collapse" id="collapseBacklight">
     <div>
       <div class="form-check form-check-inline form-check-orange">
-        <input class="form-check-input" type="radio" name="Backlightlightradio" id="BacklightRedColor" value="Red">
+        <input class="form-check-input" type="radio" name="lightradio" id="RadioRedColor" value="Red">
         <label class="form-check-label" for="BacklightRedColor">Red color</label>
       </div>
       <div class="form-check form-check-inline form-check-orange">
-        <input class="form-check-input" type="radio" name="Backlightlightradio" id="BacklightBlueColor" value="Blue">
+        <input class="form-check-input" type="radio" name="lightradio" id="RadioBlueColor" value="Blue">
         <label class="form-check-label" for="BacklightBlueColor">Blue color</label>
       </div>
       <div class="form-check form-check-inline form-check-orange">
-        <input class="form-check-input" type="radio" name="Backlightlightradio" id="BacklightWhiteColor" value="White">
+        <input class="form-check-input" type="radio" name="lightradio" id="RadioWhiteColor" value="White">
         <label class="form-check-label" for="BacklightWhiteColor">White color</label>
       </div>
       <div class="form-check form-check-inline form-check-orange">
-        <input class="form-check-input" type="radio" name="Backlightlightradio" id="BacklightIRColor" value="IR">
+        <input class="form-check-input" type="radio" name="lightradio" id="RadioIRColor" value="IR">
         <label class="form-check-label" for="BacklightIRColor">IR color</label>
       </div>
     </div>
@@ -78,12 +78,9 @@
         data : {
             name : $(this).prop("name"),
             camera : $('input[name="Cameralight"]:checked').val(),
-            cameraradio : $('input[name="Cameralightradio"]:checked').val(),
             barlight1 : $('input[name="Barlight1"]:checked').val(),
-            barlight1radio : $('input[name="Barlight1lightradio"]:checked').val(),
             backlight : $('input[name="Backlight"]:checked').val(),
-            backlightradio : $('input[name="Backlightlightradio"]:checked').val(),
-            irfilter : $('input[name="IRFilter"]:checked').val(),
+            lightradio : $('input[name="lightradio"]:checked').val(),
             obj_width : $('input[name="formObjectWidth"]').val(),
             obj_length : $('input[name="formObjectLength"]').val(),
             obj_height : $('input[name="formObjectHeight"]').val(),
