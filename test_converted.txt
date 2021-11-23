@@ -1,1 +1,0 @@
-<CameraSettings><gain>10</gain><focus>20</focus><exp_time_c>30</exp_time_c><exp_time_bar>40</exp_time_bar><exp_time_back>50</exp_time_back><flash_c_c>60</flash_c_c><flash_c_b>70</flash_c_b><flash_c_b>80</flash_c_b><flash_seg>90</flash_seg><chrom_L>10</chrom_L><ir>11</ir></CameraSettings>
