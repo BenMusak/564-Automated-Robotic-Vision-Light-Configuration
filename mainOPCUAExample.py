@@ -1,15 +1,9 @@
-import TCPIP
 import OPCUA
 import setupParameters as sp
 import XMLParser as XMLP
 
 
 def main():
-    communicationChoice = 2
-
-    # if communicationChoice == 1:
-        # TCPIP.tcpIPXMLCommunication()
-    # else:
 
     # Connect
     client = OPCUA.connectToClient("opc.tcp://192.168.87.210:4840")
