@@ -1,14 +1,22 @@
 class CameraProfile:
-    def __init__(self, gain_level, focus_scale, exposure_time_camera, exposure_time_barlight, exposure_time_backlight,
-                 flash_color_camera, flash_color_barlight, flash_color_backlight, flash_segment, chromatic_lock, ir_filter):
+    def __init__(self, gain_level=0, focus_scale=0, exposure_time_camera=0, flash_color_camera=0, chromatic_lock=0,
+                 ir_filter=0):
         self.gain_level = gain_level
         self.focus_scale = focus_scale
         self.exposure_time_camera = exposure_time_camera
-        self.exposure_time_barlight = exposure_time_barlight
-        self.exposure_time_backlight = exposure_time_backlight
         self.flash_color_camera = flash_color_camera
-        self.flash_color_barlight = flash_color_barlight
-        self.flash_color_backlight = flash_color_backlight
-        self.flash_segment = flash_segment
         self.chromatic_lock = chromatic_lock
         self.ir_filter = ir_filter
+
+
+class BarLightProfile:
+    def __init__(self, exposure_time=0, flash_color=0, angle=0):
+        self.exposure_time = exposure_time
+        self.flash_color = flash_color
+        self.angle = angle
+
+
+class BackLightProfile:
+    def __init__(self, exposure_time=0, flash_color=0):
+        self.exposure_time = exposure_time
+        self.flash_color = flash_color
