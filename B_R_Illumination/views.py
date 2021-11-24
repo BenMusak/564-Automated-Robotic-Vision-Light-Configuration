@@ -10,6 +10,8 @@ import BRClient as BR
 import folderHandler as fh
 import imageHandler as ih
 import rosbridge as rb
+import testHandler as th
+import os
 #import roboDK as rDK
 
 response = ""
@@ -24,8 +26,8 @@ def process():
     error_msg = ""
     error_state = False
 
-    rb.startROS_Connect()
-    
+    #rb.startROS_Connect()
+    # Validate the parameter data.   
     try:
         camera = request.form['camera']
         print("Camera = " + camera)
@@ -91,15 +93,30 @@ def process():
         print("Value is all good.")
     else:
         error_msg = error_msg + " Image amount contains invalid charachters or is empty. \n"
+
+    try:
+        test_name = request.form['test_name']
+    except:
+        test_name = None
     
+    if test_name =="":
+        error_msg = error_msg + " No test name was given. \n"
+    elif os.path.exists("B_R_Illumination/static/XML/" + test_name):
+        error_msg = error_msg + " Test name already exist. \n"
+    else:
+        print("Name is all good.")
+
     #rb.startROS_Connect()
     #response = BR.connect()
     #ih.getURLImage("subfolder1", "img", str(i))
+
+    #If data is valid, then begin test. If not or test is already running, then return error message back to the client.
     if error_msg =="" and test_state == False:
         print("No errors")
         response = "Successfully started the test"
         error_state = False
         test_state = True
+        test_state = th.prepareTesting(int(img_amount), test_name) 
     elif test_state:
         response = "Test is already running."
         error_state = True

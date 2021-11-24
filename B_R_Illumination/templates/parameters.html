@@ -62,8 +62,12 @@
         <input type="text" class="form-control" name="formObjectHeight" id="formObjectHeight" placeholder="Height in mm">
       </div>
       <div class="form-group">
-        <label for="formImgAmount">Image amount</label>
+        <label for="formImgAmount">Aproximate image amount</label>
         <input type="text" class="form-control" name = "formImgAmount" id="formImgAmount" placeholder="Image amount">
+      </div>
+      <div class="form-group">
+        <label for="testName">Test name</label>
+        <input type="text" class="form-control" name = "testName" id="testName" placeholder="Name for test set">
       </div>
     <button type="submit" id="submitParam" class="btn myButton begintest">Submit</button>
   </form>
@@ -76,7 +80,6 @@
     $('#submitParam').click(function(event){
     $.ajax({
         data : {
-            name : $(this).prop("name"),
             camera : $('input[name="Cameralight"]:checked').val(),
             barlight1 : $('input[name="Barlight1"]:checked').val(),
             backlight : $('input[name="Backlight"]:checked').val(),
@@ -84,7 +87,9 @@
             obj_width : $('input[name="formObjectWidth"]').val(),
             obj_length : $('input[name="formObjectLength"]').val(),
             obj_height : $('input[name="formObjectHeight"]').val(),
-            img_amount : $('input[name="formImgAmount"]').val()
+            img_amount : $('input[name="formImgAmount"]').val(),
+            test_name : $('input[name="testName"]').val()
+
         },
         type : 'POST',
         url : '/process'
