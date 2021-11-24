@@ -1,0 +1,38 @@
+
+@font-face { font-family: Palatino; src: url('Palatino.ttf'); }
+h1{
+    font-family: Palatino;
+}
+h3{
+    font-family: Palatino;
+}
+h5{
+    font-family: Palatino;
+}
+div{
+    font-family: Palatino;
+}
+a{
+    font-family: Palatino;
+}
+p{
+    font-family: Palatino;
+}
+label{
+    font-family: Palatino;
+}
+button{
+    font-family: Palatino;
+}
+input{
+    font-family: Palatino;
+}
+title{
+    font-family: Palatino;
+}
+::placeholder{
+    font-family: Palatino;
+}
+.myButton{
+    font-family: Palatino;
+}
