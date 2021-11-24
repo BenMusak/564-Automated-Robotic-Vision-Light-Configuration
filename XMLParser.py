@@ -1,21 +1,24 @@
 import xml.etree.ElementTree as ET
-
+import os
 
 def parseXMLtoString(data):
     stringData = ET.tostring(data).decode("utf-8")
     return stringData
 
 
-def parseXMLtoStringfileAndWrite(data):
+def parseXMLtoStringfileAndWrite(data, folder, img_name, img_iteration):
     stringData = ET.tostring(data).decode("utf-8")
-    file = open("test_converted.txt", "w")
+    file = open("B_R_Illumination/static/txt/" + folder + "/" + img_name + img_iteration + ".txt" )
     file.write(stringData)
     print("Done writing to file")
 
 
-def parseXMLtoFileAndWrite(data):
+def parseXMLtoFileAndWrite(data, folder, img_name, img_iteration):
     elementData = ET.ElementTree(data)
-    elementData.write("test_converted.xml")
+    if os.path.exists("B_R_Illumination/static/XML/" + folder):
+        elementData.write("B_R_Illumination/static/XML/" + folder + "/" + img_name + img_iteration + ".xml")
+    else:
+        os.makedirs("B_R_Illumination/static/XML/" + folder)
     print("Done writing to file")
 
 
