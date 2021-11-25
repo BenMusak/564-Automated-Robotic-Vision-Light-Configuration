@@ -54,8 +54,7 @@ def process():
             lightColor = request.form['lightradio']
             print("The light color = " + lightColor)
         except:
-            if backlight != "off":
-                error_msg = error_msg + " No color have been chosen for the light. \n"
+            error_msg = error_msg + " No color have been chosen for the light. \n"
     else:
         lightColor = "off"
         print("The color = " + lightColor)
@@ -116,7 +115,8 @@ def process():
         response = "Successfully started the test"
         error_state = False
         test_state = True
-        test_state = th.prepareTesting(int(img_amount), test_name) 
+        obj_dim = [obj_height, obj_length, obj_width]
+        test_state = th.prepareTesting(int(img_amount), test_name, lightColor, backlight, barlight1, camera, obj_dim) 
     elif test_state:
         response = "Test is already running."
         error_state = True
