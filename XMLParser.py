@@ -19,7 +19,7 @@ def parseXMLtoFileAndWrite(data, folder, img_name, img_iteration):
         elementData.write("B_R_Illumination/static/XML/" + folder + "/" + img_name + img_iteration + ".xml")
     else:
         os.makedirs("B_R_Illumination/static/XML/" + folder)
-    print("Done writing to file")
+    #print("Done writing to file")
 
 
 def cameraProfilerToXML(camera_profile, bar_profile, back_profile):
@@ -59,8 +59,8 @@ def cameraProfilerToXML(camera_profile, bar_profile, back_profile):
     exposureC.text = str(back_profile.exposure_time)
     flash_cBa.text = str(back_profile.flash_color)
 
-    print("Created xml element: ")
+    #print("Created xml element: ")
 
-    ET.dump(data)
+    #ET.dump(data)
 
     return data
