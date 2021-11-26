@@ -12,7 +12,7 @@ def main():
     cameraProfile, barLightProfile1, backlightProfile = sp.setParameters()
 
     # Make xml profiles and save them to a file
-    xmlData = XMLP.cameraProfilerToXML(cameraProfile, barLightProfile1, backlightProfile)
+    xmlData = XMLP.profilerToXML(cameraProfile, barLightProfile1, backlightProfile)
     XMLP.parseXMLtoFileAndWrite(xmlData)
 
     # Send the data to PLC over OPC-UA

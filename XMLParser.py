@@ -22,7 +22,7 @@ def parseXMLtoFileAndWrite(data, folder, img_name, img_iteration):
     #print("Done writing to file")
 
 
-def cameraProfilerToXML(camera_profile, bar_profile, back_profile):
+def profilerToXML(camera_profile, bar_profile, back_profile):
     data = ET.Element("Profiles")
 
     # Camera
@@ -56,11 +56,49 @@ def cameraProfilerToXML(camera_profile, bar_profile, back_profile):
     exposureBa = ET.SubElement(backlightProfile, "exp_time")
     flash_cBa = ET.SubElement(backlightProfile, "flash_c")
     # Set
-    exposureC.text = str(back_profile.exposure_time)
+    exposureBa.text = str(back_profile.exposure_time)
     flash_cBa.text = str(back_profile.flash_color)
 
     #print("Created xml element: ")
 
     #ET.dump(data)
+
+    return data
+
+
+def setupProfilerToXml(camera_pos_profile, bar_pos_profile):
+    data = ET.Element("Position_Profiles")
+
+    # Camera
+    cameraProfile = ET.SubElement(data, "CameraPosProfile")
+    xPos = ET.SubElement(cameraProfile, "xPos")
+    zPos = ET.SubElement(cameraProfile, "yPos")
+    yPos = ET.SubElement(cameraProfile, "zPos")
+    jaw = ET.SubElement(cameraProfile, "jaw")
+    pitch = ET.SubElement(cameraProfile, "pitch")
+    roll = ET.SubElement(cameraProfile, "roll")
+    # Set
+    xPos.text = str(camera_pos_profile.xPos)
+    yPos.text = str(camera_pos_profile.yPos)
+    zPos.text = str(camera_pos_profile.zPos)
+    jaw.text = str(camera_pos_profile.jaw)
+    pitch.text = str(camera_pos_profile.ptch)
+    roll.text = str(camera_pos_profile.roll)
+
+    # Bar light
+    barLightProfile = ET.SubElement(data, "barLightPosProfile")
+    xPos = ET.SubElement(barLightProfile, "xPos")
+    zPos = ET.SubElement(barLightProfile, "yPos")
+    yPos = ET.SubElement(barLightProfile, "zPos")
+    jaw = ET.SubElement(barLightProfile, "jaw")
+    pitch = ET.SubElement(barLightProfile, "pitch")
+    roll = ET.SubElement(barLightProfile, "roll")
+    # Set
+    xPos.text = str(bar_pos_profile.xPos)
+    yPos.text = str(bar_pos_profile.yPos)
+    zPos.text = str(bar_pos_profile.zPos)
+    jaw.text = str(bar_pos_profile.jaw)
+    pitch.text = str(bar_pos_profile.ptch)
+    roll.text = str(bar_pos_profile.roll)
 
     return data

@@ -20,3 +20,21 @@ class BackLightProfile:
     def __init__(self, exposure_time=0, flash_color=0):
         self.exposure_time = exposure_time
         self.flash_color = flash_color
+
+class CameraSetupProfile:
+    def __init__(self, xPos=0, yPos=0, zPos=0, jaw=0, pitch=0, roll=0):
+        self.xPos = xPos
+        self.yPos = yPos
+        self.zPos = zPos
+        self.jaw = jaw
+        self.pitch = pitch
+        self.roll = roll
+
+class barLightSetupProfile:
+    def __init__(self, xPos=0, yPos=0, zPos=0, jaw=0, pitch=0, roll=0):
+        self.xPos = xPos
+        self.yPos = yPos
+        self.zPos = zPos
+        self.jaw = jaw
+        self.pitch = pitch
+        self.roll = roll
