@@ -16,7 +16,7 @@ def startROS_Connect():
     # service = roslibpy.Service(client, '/add_two_ints', 'beginner_tutorials/AddTwoInts')
     goalMsg = {
         "x" : 5,
-        "y" : 5,
+        "y" : 10,
         "z" : 5,
         "rotx" : 5,
         "roty" : 5,
@@ -25,15 +25,15 @@ def startROS_Connect():
     
     goal = roslibpy.actionlib.Goal(action_client, roslibpy.Message(goalMsg))
 
-    goal.on('feedback', lambda f: print(f['sequence']))
-
     goal.send()
 
-    #result = goal.wait(10)
+    result = goal.wait(10)
     
     action_client.dispose()
 
-    #print('Result: {}'.format(result['sequence']))
+    print('Result: {}'.format(result['robot_moved_str']))
+
+
     #while client.is_connected:
         #msg = roslibpy.Message(Twist)
         #talker.publish(roslibpy.Message({'linear' : vec3}))
