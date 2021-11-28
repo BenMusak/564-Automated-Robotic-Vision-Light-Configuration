@@ -1,3 +1,4 @@
+from __future__ import print_function
 import roslibpy
 import roslibpy.actionlib
 
@@ -7,7 +8,7 @@ def startROS_Connect():
     client = roslibpy.Ros(host='localhost', port=9090)
     client.run()
     
-    action_client = roslibpy.actionlib.ActionClient(client,'/Robot_position_msg','messages/posAction')
+    action_client = roslibpy.actionlib.ActionClient(client,'/Custom_Python_Script','robot_handler/posAction')
 
 
 
@@ -23,15 +24,16 @@ def startROS_Connect():
         "rotz" : 5,
     }
     
+    
     goal = roslibpy.actionlib.Goal(action_client, roslibpy.Message(goalMsg))
 
+    goal.on('feedback', lambda f: print(f['robot_moved_str']))
     goal.send()
-
     result = goal.wait(10)
-    
     action_client.dispose()
 
-    print('Result: {}'.format(result['robot_moved_str']))
+    print('Result: {}'.format(result['x']))
+    print(result)
 
 
     #while client.is_connected:
