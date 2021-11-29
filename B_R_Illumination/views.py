@@ -122,7 +122,8 @@ def process():
         error_state = False
         test_state = True
         obj_dim = [obj_height, obj_length, obj_width]
-        test_state = th.prepareTesting(OPCUA_client, ros_client, int(img_amount), test_name, lightColor, backlight, barlight1, camera, obj_dim) 
+        #Here we call the testing loop.
+        #test_state = th.prepareTesting(OPCUA_client, ros_client, int(img_amount), test_name, lightColor, backlight, barlight1, camera, obj_dim) 
     elif test_state:
         response = "Test is already running."
         error_state = True
