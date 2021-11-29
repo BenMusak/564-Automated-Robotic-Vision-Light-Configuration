@@ -2,12 +2,14 @@ from __future__ import print_function
 import roslibpy
 import roslibpy.actionlib
 
-
-
 def startROS_Connect():
     client = roslibpy.Ros(host='localhost', port=9090)
     client.run()
-    
+
+    return client
+
+def ROS_SendGoal(client, x,y,z,rotx,roty,rotz,robot_name):
+
     action_client = roslibpy.actionlib.ActionClient(client,'/Custom_Python_Script','robot_handler/posAction')
 
 
@@ -16,12 +18,13 @@ def startROS_Connect():
     #talker_robot = roslibpy.Topic(client, '/move_group/cmd_vel', 'geometry_msgs/Pose')
     # service = roslibpy.Service(client, '/add_two_ints', 'beginner_tutorials/AddTwoInts')
     goalMsg = {
-        "x" : 5,
-        "y" : 10,
-        "z" : 5,
-        "rotx" : 5,
-        "roty" : 5,
-        "rotz" : 5,
+        "robot_name" : robot_name,
+        "x" : x,
+        "y" : y,
+        "z" : z,
+        "rotx" : rotx,
+        "roty" : roty,
+        "rotz" : rotz,
     }
     
     
@@ -31,9 +34,11 @@ def startROS_Connect():
     goal.send()
     result = goal.wait(10)
     action_client.dispose()
+    
 
     print('Result: {}'.format(result['x']))
     print(result)
+    
 
 
     #while client.is_connected:

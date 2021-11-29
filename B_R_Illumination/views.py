@@ -12,6 +12,8 @@ import imageHandler as ih
 import rosbridge as rb
 import testHandler as th
 import os
+import path_planner as pp
+import OPCUA
 #import roboDK as rDK
 
 response = ""
@@ -19,6 +21,10 @@ folders = []
 images =[]
 test_state = False
 run = [True] # Used for stopping the RoboDK threads.We can simulate them using a list, since pointers do not exist in python.
+firstrun = False
+
+ros_client = rb.startROS_Connect()
+OPCUA_client = OPCUA.connectToClient("opc.tcp://192.168.87.210:4840")
 
 @app.route('/process', methods=['POST'])
 def process():
@@ -26,8 +32,8 @@ def process():
     error_msg = ""
     error_state = False
 
-    #rb.startROS_Connect()
     # Validate the parameter data.   
+    pp.plan_light_route([0,0,0], [5,5,5] )
     try:
         camera = request.form['camera']
         print("Camera = " + camera)
@@ -116,7 +122,7 @@ def process():
         error_state = False
         test_state = True
         obj_dim = [obj_height, obj_length, obj_width]
-        test_state = th.prepareTesting(int(img_amount), test_name, lightColor, backlight, barlight1, camera, obj_dim) 
+        test_state = th.prepareTesting(OPCUA_client, ros_client, int(img_amount), test_name, lightColor, backlight, barlight1, camera, obj_dim) 
     elif test_state:
         response = "Test is already running."
         error_state = True
