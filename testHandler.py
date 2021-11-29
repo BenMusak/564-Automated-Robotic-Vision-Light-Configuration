@@ -2,8 +2,11 @@ import numpy as np
 import math
 import XMLParser as xmlp
 import controller as con
+import rosbridge as rb
+import imageHandler as ih
 
-def prepareTesting(img_amount, foldername, lightcolor, backlight, lightbar, cameralight, obj_hlw):
+
+def prepareTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, backlight, lightbar, cameralight, obj_hlw):
     #Declaring max and min variables
     gain_max = 4
     gain_min = 0
@@ -31,17 +34,22 @@ def prepareTesting(img_amount, foldername, lightcolor, backlight, lightbar, came
         light_steps = gain_steps
     print(gain_steps, exposure_steps)
     
-    #TODO: Generate path for camera and light.
-    
+     #TODO: Generate path for camera and light.
+
     i = 0
     #Run the double for loop and iterate over the gain and exposure steps.
     for camera_i in np.arange(gain_min, gain_max, camera_steps):
+        #TODO Step0: Move the UR5 light robot in a safe position, so the UR5 cam can move to new position after.
+        rb.ROS_SendGoal(ros_client, 10,10,10,10,10,10,"lightbar_robot")
         #TODO Step1: Move UR5 cam robot.
-        #Move on when movements is confirmed
-        #TODO Step2: Compute focus scale.
+        rb.ROS_SendGoal(ros_client, 10,10,10,10,10,10,"camera_robot")
+        cameraarm_setup = con.CameraSetupProfile()
+        #TODO Step2:  focus scale.
         #Maybe even receive pose for the robot arm.
         for light_i in np.arange(gain_min, gain_max, light_steps):
             #TODO Step3: Move UR5 barlight robot and only if variable lightbar == "on.
+            rb.ROS_SendGoal(ros_client, 10,10,10,10,10,10,"lightbar_robot")
+            lightarm_setup = con.barLightSetupProfile()
             #Move on when movement is confirmed.
             #Maybe even receive pose for the robot arm.
             for gain_i in np.arange(gain_min, gain_max, gain_steps):
@@ -57,12 +65,14 @@ def prepareTesting(img_amount, foldername, lightcolor, backlight, lightbar, came
 
                     backlightprofile = con.BackLightProfile()
                     backlightprofile.exposure_time = exposure_i
+                    #Create XML data.
+                    #xmlData = xmlp.profilerToXML(cameraprofile, barlightprofile, backlightprofile)
 
                     #TODO Step5: Wait for confirmation from PLC that images was captures successfully.
+
                     #TODO Step6: Retrieve image from the cameras URL.
+                    ih.getURLImage()
                     #TODO Step7: Log XML data.
-                    #Create XML data.
-                    #xmlData = xmlp.cameraProfilerToXML(cameraprofile, barlightprofile, backlightprofile)
                     #Save XML data.
                     #xmlp.parseXMLtoFileAndWrite(xmlData, foldername, foldername, str(i))
     print(i)
