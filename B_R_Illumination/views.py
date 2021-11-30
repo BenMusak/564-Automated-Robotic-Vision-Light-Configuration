@@ -33,7 +33,7 @@ def process():
     error_state = False
 
     # Validate the parameter data.   
-    rp.plan_camera_route([0,0,0], [15,1,1], True) #This is just for testing, should be used in testHandler.py
+    rp.plan_camera_route([10,10,0], [1,1,1], True) #This is just for testing, should be used in testHandler.py
     try:
         camera = request.form['camera']
         print("Camera = " + camera)
@@ -88,6 +88,29 @@ def process():
     else:
         error_msg = error_msg + " Width contains invalid charachters or is empty. \n"
     
+    try:
+        view_pointx = request.form['view_pointx']
+        view_pointy = request.form['view_pointy']
+        view_pointz = request.form['view_pointz']
+        print("Viewpoint x = " + view_pointx + "  Viewpoint y = " + view_pointy + "  Viewpoint z = " + view_pointz)
+    except:
+        view_pointx = None
+        view_pointy = None
+        view_pointz = None
+    
+    if view_pointx.isdigit():
+        print("Value is all good.")
+    else:
+        error_msg = error_msg + " Viewpoint x contains invalid charachters or is empty. \n"
+    if view_pointy.isdigit():
+        print("Value is all good.")
+    else:
+        error_msg = error_msg + " Viewpoint y contains invalid charachters or is empty. \n"
+    if view_pointz.isdigit():
+        print("Value is all good.")
+    else:
+        error_msg = error_msg + " Viewpoint z contains invalid charachters or is empty. \n"
+
     try:
         img_amount = request.form['img_amount']
         print("Image amount = " + img_amount)

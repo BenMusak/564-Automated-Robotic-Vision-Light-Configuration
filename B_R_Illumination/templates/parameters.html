@@ -61,6 +61,18 @@
         <label for="formObjectHeight">Object Height</label>
         <input type="text" class="form-control" name="formObjectHeight" id="formObjectHeight" placeholder="Height in mm">
       </div>
+        <div class="form-group">
+          <label for="Viewpointx">Viewpoint x</label>
+          <input type="text" class="form-control" name="Viewpointx" id="Viewpointx" placeholder="X-coordinate for viewpoint in mm">
+        </div>
+        <div class="form-group">
+          <label for="Viewpointy">Viewpoint y</label>
+          <input type="text" class="form-control" name="Viewpointy" id="Viewpointy" placeholder="Y-coordinate for viewpoint in mm">
+        </div>
+        <div class="form-group">
+          <label for="Viewpointz">Viewpoint z</label>
+          <input type="text" class="form-control" name="Viewpointz" id="Viewpointz" placeholder="Z-coordinate for viewpoint in mm">
+        </div>
       <div class="form-group">
         <label for="formImgAmount">Aproximate image amount</label>
         <input type="text" class="form-control" name = "formImgAmount" id="formImgAmount" placeholder="Image amount">
@@ -87,6 +99,9 @@
             obj_width : $('input[name="formObjectWidth"]').val(),
             obj_length : $('input[name="formObjectLength"]').val(),
             obj_height : $('input[name="formObjectHeight"]').val(),
+            view_pointx : $('input[name="Viewpointx"]').val(),
+            view_pointy : $('input[name="Viewpointy"]').val(),
+            view_pointz : $('input[name="Viewpointz"]').val(),
             img_amount : $('input[name="formImgAmount"]').val(),
             test_name : $('input[name="testName"]').val()
 
