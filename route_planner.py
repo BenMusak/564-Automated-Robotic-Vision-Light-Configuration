@@ -45,7 +45,10 @@ def plan_camera_route(viewPoint, obj_hlw, feedback):
     # This results in a back and forth movement
     # Example: "For the first x-coordinate, the y-coordinates start at negative and end at positive.
     # For the second x-coordinate, the y-coordinates start at positive and end at negative."
-
+    rot_error_counter = 0
+    rot_error = False
+    error_cord = []
+    error_rod = []
     for x_it in np.arange(max_x, min_x, step_x):
         try:
             # Computing the x, y and z coordinates of the points in the hemisphere wrt. to the robot frame
@@ -57,10 +60,12 @@ def plan_camera_route(viewPoint, obj_hlw, feedback):
 
             # Compute roll, pitch and yaw of the camera with fixed angles wrt. the robot frame.
             # vectors from camera frame to inspection frame
-            x_vect = inspection_center_xyz[0] - x_hemsphe
-            y_vect = inspection_center_xyz[1] - y_hemsphe
-            z_vect = inspection_center_xyz[2] - z_hemsphe
-
+            x_vect = inspection_center_xyz[0]*50 - x_hemsphe
+            y_vect = 0-y_hemsphe
+            z_vect = inspection_center_xyz[2]*50 - z_hemsphe
+            #x_vect = inspection_center_xyz[0] - x_hemsphe
+            #y_vect = inspection_center_xyz[1] - y_hemsphe
+            #z_vect = inspection_center_xyz[2] - z_hemsphe
             if x_vect < 0 and z_vect > 0:
                 rot_y = atan(z_vect/x_vect)/pi*180
             elif x_vect > 0 and z_vect > 0:
@@ -70,8 +75,11 @@ def plan_camera_route(viewPoint, obj_hlw, feedback):
             elif x_vect < 0 and z_vect < 0:
                 rot_y = atan(x_vect/z_vect)/pi*180+270
             else:
+                rot_error_counter = rot_error_counter + 1
+                rot_error = True
+                error_cord.append([x_hemsphe, y_hemsphe, z_hemsphe])
                 print(
-                    "computiation fail in y angle between camera and inspection object")
+                    "computiation fail in y angle between camera and inspection object with coordinates: ", "x: ",x_vect," y: ", y_vect," z: ", z_vect )
 
             if y_vect > 0 and z_vect < 0:
                 rot_x = atan(y_vect/(sqrt(pow(z_vect, 2)+pow(x_vect, 2))))/pi*180-90
@@ -82,29 +90,35 @@ def plan_camera_route(viewPoint, obj_hlw, feedback):
             elif y_vect > 0 and z_vect > 0:
                 rot_x = atan(y_vect/z_vect)/pi*180
             else:
+                rot_error_counter = rot_error_counter + 1
+                rot_error = True
+                error_cord.append([x_hemsphe, y_hemsphe, z_hemsphe])
                 print(
-                    "computiation fail in x angle between camera and inspection object")
+                    "computiation fail in x angle between camera and inspection object with coordinates: ", "x: ",x_vect," y: ", y_vect," z: ", z_vect )
 
             pathPoints = transl(
                 x_hemsphe, y_hemsphe, z_hemsphe)*rotz(0*pi/180)*roty(0*pi/180)*rotx(0*pi/180)
-
-            xyz.append(
-                [pathPoints[0, 3], pathPoints[1, 3], pathPoints[2, 3]])
+                
+            if rot_error ==False:
+                xyz.append([pathPoints[0, 3], pathPoints[1, 3], pathPoints[2, 3]])
 
             # Fixed rotation
             rot_y1 = rot_y - 90
+            print("rot_y1: ", rot_y1)
 
             # Euler rotation
             rot_x2 = rot_x + 90
-            
-            rpy.append([rot_x2,rot_y1,0])
-
+            print("rot_x2", rot_x2)
+            if rot_error ==False:
+                rpy.append([rot_x2,rot_y1,0])
+            else:
+                rot_error = False
             i += 1
             # Using the double for loop actually results is us trying to find values that exceed
             # the hemipshere, the try except func prevents the program from stopping, when this happens.
         except:
             print("compute error")
-    
+    print(rot_error_counter)
     for y_it in np.arange(min_y, max_y, step_y):
         try:
             # Computing the x, y and z coordinates of the points in the hemisphere wrt. to the robot frame
@@ -116,7 +130,7 @@ def plan_camera_route(viewPoint, obj_hlw, feedback):
 
             # Compute roll, pitch and yaw of the camera with fixed angles wrt. the robot frame.
             # vectors from camera frame to inspection frame
-            x_vect = inspection_center_xyz[0] - x_hemsphe
+            x_vect = 0- x_hemsphe
             y_vect = inspection_center_xyz[1] - y_hemsphe
             z_vect = inspection_center_xyz[2] - z_hemsphe
 
@@ -129,8 +143,11 @@ def plan_camera_route(viewPoint, obj_hlw, feedback):
             elif x_vect < 0 and z_vect < 0:
                 rot_y = atan(x_vect/z_vect)/pi*180+270
             else:
+                rot_error_counter = rot_error_counter + 1
+                rot_error = True
+                error_cord.append([x_hemsphe, y_hemsphe, z_hemsphe])
                 print(
-                    "computiation fail in y angle between camera and inspection object")
+                    "computiation fail in y angle between camera and inspection object with coordinates: ", "x: ",x_vect," y: ", y_vect," z: ", z_vect )
 
             if y_vect > 0 and z_vect < 0:
                 rot_x = atan(y_vect/(sqrt(pow(z_vect, 2)+pow(x_vect, 2))))/pi*180-90
@@ -141,22 +158,29 @@ def plan_camera_route(viewPoint, obj_hlw, feedback):
             elif y_vect > 0 and z_vect > 0:
                 rot_x = atan(y_vect/z_vect)/pi*180
             else:
+                rot_error_counter = rot_error_counter + 1
+                rot_error = True
+                error_cord.append([x_hemsphe, y_hemsphe, z_hemsphe])
                 print(
-                    "computiation fail in x angle between camera and inspection object")
+                    "computiation fail in x angle between camera and inspection object with coordinates: ", "x: ",x_vect," y: ", y_vect," z: ", z_vect )
 
             pathPoints = transl(
                 x_hemsphe, y_hemsphe, z_hemsphe)*rotz(0*pi/180)*roty(0*pi/180)*rotx(0*pi/180)
 
-            xyz.append(
-                [pathPoints[0, 3], pathPoints[1, 3], pathPoints[2, 3]])
+            if rot_error == False:
+                xyz.append([pathPoints[0, 3], pathPoints[1, 3], pathPoints[2, 3]])
 
             # Fixed rotation
             rot_y1 = rot_y - 90
+            print("rot_y1: ", rot_y1)
 
             # Euler rotation
             rot_x2 = rot_x + 90
-            
-            rpy.append([rot_x2,rot_y1,0])
+            print("rot_x2: ", rot_x2)
+            if rot_error == False:
+                rpy.append([rot_x2,rot_y1,0])
+            else:
+                rot_error = False
 
             i += 1
             # Using the double for loop actually results is us trying to find values that exceed
@@ -168,7 +192,11 @@ def plan_camera_route(viewPoint, obj_hlw, feedback):
         step_y = -step_y
 
     print("Number of points in hemossphere: ",len(xyz))
-    with open('Hemisphere.csv', 'w', encoding='UTF8') as f:
+    with open('error.csv', 'w', encoding='UTF8') as f:
+        writer = csv.writer(f)
+        for pos in error_cord:
+            writer.writerow(pos)
+    with open('success.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
         for pos in xyz:
             writer.writerow(pos)
@@ -176,17 +204,27 @@ def plan_camera_route(viewPoint, obj_hlw, feedback):
     print("path generated", len(xyz))
 
     #Save X, Y and Z coordinates as a csv file.
-    print("Number of points in hemossphere: ",len(xyz))
-
+    print("Length of rpy = ", len(rpy))
+    print("Number of rot errors = ", rot_error_counter)
     #If we want feedback, we can show the 3D path plot. 
     if feedback:
-        DataAll1D = np.loadtxt("Hemisphere.csv", delimiter=",")
+        DataAll1D = np.loadtxt("error.csv", delimiter=",")
         X = DataAll1D[:,0]
         Y = DataAll1D[:,1]
         Z = DataAll1D[:,2]
         fig = plt.figure()
         ax = plt.axes(projection ='3d')
-        ax.plot3D(X, Y, Z, 'green')
+        ax.scatter(X, Y, Z, 'green')
+        #Remember to close this for continuing the code.
+        plt.show()
+    if feedback:
+        DataAll1D = np.loadtxt("success.csv", delimiter=",")
+        X = DataAll1D[:,0]
+        Y = DataAll1D[:,1]
+        Z = DataAll1D[:,2]
+        fig = plt.figure()
+        ax = plt.axes(projection ='3d')
+        ax.scatter(X, Y, Z, 'green')
         #Remember to close this for continuing the code.
         plt.show()
 
@@ -236,6 +274,9 @@ def plan_light_route(viewPoint, obj_hlw, feedback):
     # This results in a back and forth movement
     # Example: "For the first x-coordinate, the y-coordinates start at negative and end at positive.
     # For the second x-coordinate, the y-coordinates start at positive and end at negative."
+    rot_error_counter = 0
+    rot_error = False
+    error_cord = []
     for x_it in np.arange(max_x, min_x, step_x):
         for y_it in np.arange(min_y, max_y, step_y):
             try:
@@ -268,6 +309,9 @@ def plan_light_route(viewPoint, obj_hlw, feedback):
                 elif x_vect < 0 and z_vect < 0:
                     rot_y = atan(x_vect/z_vect)/pi*180+270
                 else:
+                    rot_error_counter = rot_error_counter + 1
+                    rot_error = True
+                    error_cord.append([x_ellipsoid, y_ellipsoid, z_ellipsoid])
                     print(
                         "computiation fail in y angle between camera and inspection object")
 
@@ -280,6 +324,9 @@ def plan_light_route(viewPoint, obj_hlw, feedback):
                 elif y_vect > 0 and z_vect > 0:
                     rot_x = atan(y_vect/z_vect)/pi*180
                 else:
+                    rot_error_counter = rot_error_counter + 1
+                    rot_error = True
+                    error_cord.append([x_ellipsoid, y_ellipsoid, z_ellipsoid])
                     print(
                         "computiation fail in x angle between camera and inspection object")
 
@@ -287,8 +334,8 @@ def plan_light_route(viewPoint, obj_hlw, feedback):
                 pathPoints = transl(
                     x_ellipsoid, y_ellipsoid, z_ellipsoid)*rotz(0*pi/180)*roty(0*pi/180)*rotx(0*pi/180)
 
-                xyz.append(
-                    [pathPoints[0, 3], pathPoints[1, 3], pathPoints[2, 3]])
+                if rot_error ==False:
+                    xyz.append([pathPoints[0, 3], pathPoints[1, 3], pathPoints[2, 3]])
 
                 # Fixed rotation
                 rot_y1 = rot_y - 90
@@ -296,7 +343,10 @@ def plan_light_route(viewPoint, obj_hlw, feedback):
                 # Euler rotation
                 rot_x2 = rot_x + 90
                 
-                rpy.append([rot_x2,rot_y1,0])
+                if rot_error ==False:
+                    rpy.append([rot_x2,rot_y1,0])
+                else:
+                    rot_error = False
 
                 i += 1
                 # Using the double for loop actually results in us trying to find values that exceed
@@ -316,11 +366,26 @@ def plan_light_route(viewPoint, obj_hlw, feedback):
         for pos in xyz:
             writer.writerow(pos)
 
+    try:
+        with open('error.csv', 'w', encoding='UTF8') as f:
+            writer = csv.writer(f)
+            for pos in error_cord:
+                writer.writerow(pos)
+    except:
+
+        pass
+
+
+    with open('success.csv', 'w', encoding='UTF8') as f:
+        writer = csv.writer(f)
+        for pos in xyz:
+            writer.writerow(pos)
+
     print("path generated")
     
     #If we want feedback, we can show the 3D path plot. 
     if feedback:
-        DataAll1D = np.loadtxt("Ellipsoid.csv", delimiter=",")
+        """DataAll1D = np.loadtxt("Ellipsoid.csv", delimiter=",")
         X = DataAll1D[:,0]
         Y = DataAll1D[:,1]
         Z = DataAll1D[:,2]
@@ -328,7 +393,29 @@ def plan_light_route(viewPoint, obj_hlw, feedback):
         ax = plt.axes(projection ='3d')
         ax.plot3D(X, Y, Z, 'green')
         #Remember to close this for continuing the code.
-        plt.show()
+        plt.show()"""
+        if feedback:
+            try:
+                DataAll1D = np.loadtxt("error.csv", delimiter=",")
+                X = DataAll1D[:,0]
+                Y = DataAll1D[:,1]
+                Z = DataAll1D[:,2]
+                fig = plt.figure()
+                ax = plt.axes(projection ='3d')
+                ax.scatter(X, Y, Z, 'green')
+                #Remember to close this for continuing the code.
+                plt.show()
+            except:
+                pass
+            DataAll1D = np.loadtxt("success.csv", delimiter=",")
+            X = DataAll1D[:,0]
+            Y = DataAll1D[:,1]
+            Z = DataAll1D[:,2]
+            fig = plt.figure()
+            ax = plt.axes(projection ='3d')
+            ax.scatter(X, Y, Z, 'green')
+            #Remember to close this for continuing the code.
+            plt.show()
 
 
     """for i in range(len(xyz)):
