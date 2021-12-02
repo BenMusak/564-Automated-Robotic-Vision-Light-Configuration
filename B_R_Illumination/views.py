@@ -90,23 +90,11 @@ def process():
         error_msg = error_msg + " Width contains invalid charachters or is empty. \n"
     
     try:
-        view_pointx = request.form['view_pointx']
-        view_pointy = request.form['view_pointy']
         view_pointz = request.form['view_pointz']
-        print("Viewpoint x = " + view_pointx + "  Viewpoint y = " + view_pointy + "  Viewpoint z = " + view_pointz)
+        print(" Viewpoint z = " + view_pointz)
     except:
-        view_pointx = None
-        view_pointy = None
         view_pointz = None
     
-    if view_pointx.isdigit():
-        print("Value is all good.")
-    else:
-        error_msg = error_msg + " Viewpoint x contains invalid charachters or is empty. \n"
-    if view_pointy.isdigit():
-        print("Value is all good.")
-    else:
-        error_msg = error_msg + " Viewpoint y contains invalid charachters or is empty. \n"
     if view_pointz.isdigit():
         print("Value is all good.")
     else:
@@ -147,7 +135,7 @@ def process():
         test_state = True
         obj_dim = [int(obj_height)/1000, int(obj_length)/1000, int(obj_width)/1000]
         print(obj_dim)
-        viewPoint = [int(view_pointx)/1000, int(view_pointy)/1000, int(view_pointz)/1000]
+        viewPoint = int(view_pointz)/1000
         #obj_dim = [0.1, 0.1, 0.1]
         #viewPoint = [0.1, 0.1, 0.1]
         print("viewPoint", viewPoint )

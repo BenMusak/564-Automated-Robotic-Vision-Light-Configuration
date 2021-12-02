@@ -47,11 +47,11 @@ def prepareTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, 
     #Run the double for loop and iterate over the gain and exposure steps.
     for camera_i in camera_route: #TODO: Need to be changed, so that it iterates trough the returned list from plan_camera_route.
         #TODO Step0: Move the UR5 light robot in a safe position, so the UR5 cam can move to new position after.
-        rb.ROS_SendGoal(ros_client, 1, -0.16, 0.75, "lightbar_robot", viewpoint[2], obj_hlw) #Real values should come from route_planner.py
+        rb.ROS_SendGoal(ros_client, 1, -0.16, 0.75, "lightbar_robot", viewpoint, obj_hlw) #Real values should come from route_planner.py
         #TODO Step1: Move UR5 cam robot.
         input()
         print("Sending coordinates", camera_i, " to the camera.")
-        rb.ROS_SendGoal(ros_client, camera_i[0],camera_i[1],camera_i[2],"camera_robot", viewpoint[2], obj_hlw)
+        rb.ROS_SendGoal(ros_client, camera_i[0],camera_i[1],camera_i[2],"camera_robot", viewpoint, obj_hlw)
         input()
         #cameraarm_setup = con.CameraSetupProfile()
         #TODO Step2:  focus scale.
@@ -59,7 +59,7 @@ def prepareTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, 
         for light_i in light_route: #TODO: Need to be changed, so that it iterates trough the returned list from plan_light_route.
             #TODO Step3: Move UR5 barlight robot and only if variable lightbar == "on.
             if lightbar != "off":
-                rb.ROS_SendGoal(ros_client, light_i[0],light_i[1],light_i[2],"lightbar_robot", viewpoint[2], obj_hlw)
+                rb.ROS_SendGoal(ros_client, light_i[0],light_i[1],light_i[2],"lightbar_robot", viewpoint, obj_hlw)
                 #lightarm_setup = con.barLightSetupProfile()
             #Move on when movement is confirmed.
             #Maybe even receive pose for the robot arm.
