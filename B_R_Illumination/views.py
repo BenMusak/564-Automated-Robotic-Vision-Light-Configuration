@@ -23,8 +23,8 @@ test_state = False
 run = [True] # Used for stopping the RoboDK threads.We can simulate them using a list, since pointers do not exist in python.
 firstrun = False
 
-#ros_client = rb.startROS_Connect()
-#OPCUA_client = OPCUA.connectToClient("opc.tcp://192.168.87.210:4840")
+ros_client = rb.startROS_Connect()
+OPCUA_client = OPCUA.connectToClient("opc.tcp://192.168.87.210:4840")
 
 @app.route('/process', methods=['POST'])
 def process():
@@ -33,7 +33,8 @@ def process():
     error_state = False
 
     # Validate the parameter data.   
-    rp.plan_camera_route([10,10,0], [1,1,1], True) #This is just for testing, should be used in testHandler.py
+    #rp.plan_camera_route([10,10,0], [1,1,1], True) #This is just for testing, should be used in testHandler.py
+    #ih.getURLImage("folder1", "test", "1")
     try:
         camera = request.form['camera']
         print("Camera = " + camera)
@@ -144,9 +145,14 @@ def process():
         response = "Successfully started the test"
         error_state = False
         test_state = True
-        obj_dim = [obj_height, obj_length, obj_width]
+        obj_dim = [int(obj_height)/1000, int(obj_length)/1000, int(obj_width)/1000]
+        print(obj_dim)
+        viewPoint = [int(view_pointx)/1000, int(view_pointy)/1000, int(view_pointz)/1000]
+        #obj_dim = [0.1, 0.1, 0.1]
+        #viewPoint = [0.1, 0.1, 0.1]
+        print("viewPoint", viewPoint )
         #Here we call the testing loop.
-        #test_state = th.prepareTesting(OPCUA_client, ros_client, int(img_amount), test_name, lightColor, backlight, barlight1, camera, obj_dim) 
+        test_state = th.prepareTesting(OPCUA_client, ros_client, int(img_amount), test_name, lightColor, backlight, barlight1, camera, obj_dim, viewPoint) 
     elif test_state:
         response = "Test is already running."
         error_state = True
