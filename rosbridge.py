@@ -8,7 +8,7 @@ def startROS_Connect():
 
     return client
 
-def ROS_SendGoal(client, x,y,z,rotx,roty,rotz,robot_name):
+def ROS_SendGoal(client, x,y,z,robot_name, viewpoint_height, obj_hlw):
 
     action_client = roslibpy.actionlib.ActionClient(client,'/Custom_Python_Script','robot_handler/posAction')
 
@@ -22,9 +22,10 @@ def ROS_SendGoal(client, x,y,z,rotx,roty,rotz,robot_name):
         "x" : x,
         "y" : y,
         "z" : z,
-        "rotx" : rotx,
-        "roty" : roty,
-        "rotz" : rotz,
+        "viewpoint_height" : viewpoint_height,
+        "obj_height" : obj_hlw[0],
+        "obj_length" : obj_hlw[1],
+        "obj_width" : obj_hlw[2]
     }
     
     
@@ -32,11 +33,11 @@ def ROS_SendGoal(client, x,y,z,rotx,roty,rotz,robot_name):
 
     goal.on('feedback', lambda f: print(f['robot_moved_str']))
     goal.send()
-    result = goal.wait(10)
+    result = goal.wait()
     action_client.dispose()
     
 
-    print('Result: {}'.format(result['x']))
+    #print('Result: {}'.format(result['x']))
     print(result)
     
 
