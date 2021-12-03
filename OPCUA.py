@@ -2,10 +2,10 @@ from opcua import Client
 from opcua import ua
 
 
-def connectToClient(ip):
+def connectAsClient(ip):
     client = Client(ip)
     try:
-        print("Trying to connect to client...")
+        print("Trying to connect to server...")
         client.connect()
         print("Successfully connected")
         return client

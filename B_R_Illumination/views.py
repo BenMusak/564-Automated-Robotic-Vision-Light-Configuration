@@ -23,8 +23,8 @@ test_state = False
 run = [True] # Used for stopping the RoboDK threads.We can simulate them using a list, since pointers do not exist in python.
 firstrun = False
 
-ros_client = rb.startROS_Connect()
-OPCUA_client = OPCUA.connectToClient("opc.tcp://192.168.87.210:4840")
+#ros_client = rb.startROS_Connect()
+OPCUA_client = OPCUA.connectAsClient("opc.tcp://192.168.87.210:4840")
 
 @app.route('/process', methods=['POST'])
 def process():
