@@ -1,4 +1,4 @@
-import xml.etree.ElementTree as ET
+import xml.etree.cElementTree as ET
 import os
 
 def parseXMLtoString(data):
@@ -15,14 +15,16 @@ def parseXMLtoStringfileAndWrite(data, folder, img_name, img_iteration):
 
 def parseXMLtoFileAndWrite(data, folder, img_name, img_iteration):
     elementData = ET.ElementTree(data)
+
     if os.path.exists("B_R_Illumination/static/XML/" + folder):
         elementData.write("B_R_Illumination/static/XML/" + folder + "/" + img_name + img_iteration + ".xml")
     else:
         os.makedirs("B_R_Illumination/static/XML/" + folder)
+        elementData.write("B_R_Illumination/static/XML/" + folder + "/" + img_name + img_iteration + ".xml")
     #print("Done writing to file")
 
 
-def profilerToXML(camera_profile, bar_profile, back_profile):
+def profilerToXML(camera_profile, bar_profile, back_profile, camera_pos_profile, bar_pos_profile):
     data = ET.Element("Profiles")
 
     # Camera
@@ -59,6 +61,38 @@ def profilerToXML(camera_profile, bar_profile, back_profile):
     exposureBa.text = str(back_profile.exposure_time)
     flash_cBa.text = str(back_profile.flash_color)
 
+        # Camera
+    cameraProfile = ET.SubElement(data, "CameraPosProfile")
+    xPos = ET.SubElement(cameraProfile, "xPos")
+    zPos = ET.SubElement(cameraProfile, "yPos")
+    yPos = ET.SubElement(cameraProfile, "zPos")
+    yaw = ET.SubElement(cameraProfile, "yaw")
+    pitch = ET.SubElement(cameraProfile, "pitch")
+    roll = ET.SubElement(cameraProfile, "roll")
+    # Set
+    xPos.text = str(camera_pos_profile.xPos)
+    yPos.text = str(camera_pos_profile.yPos)
+    zPos.text = str(camera_pos_profile.zPos)
+    yaw.text = str(camera_pos_profile.yaw)
+    pitch.text = str(camera_pos_profile.pitch)
+    roll.text = str(camera_pos_profile.roll)
+
+    # Bar light
+    barLightProfile = ET.SubElement(data, "barLightPosProfile")
+    xPos = ET.SubElement(barLightProfile, "xPos")
+    zPos = ET.SubElement(barLightProfile, "yPos")
+    yPos = ET.SubElement(barLightProfile, "zPos")
+    yaw = ET.SubElement(barLightProfile, "yaw")
+    pitch = ET.SubElement(barLightProfile, "pitch")
+    roll = ET.SubElement(barLightProfile, "roll")
+    # Set
+    xPos.text = str(bar_pos_profile.xPos)
+    yPos.text = str(bar_pos_profile.yPos)
+    zPos.text = str(bar_pos_profile.zPos)
+    yaw.text = str(bar_pos_profile.yaw)
+    pitch.text = str(bar_pos_profile.pitch)
+    roll.text = str(bar_pos_profile.roll)
+
     #print("Created xml element: ")
 
     #ET.dump(data)
@@ -74,15 +108,15 @@ def setupProfilerToXml(camera_pos_profile, bar_pos_profile):
     xPos = ET.SubElement(cameraProfile, "xPos")
     zPos = ET.SubElement(cameraProfile, "yPos")
     yPos = ET.SubElement(cameraProfile, "zPos")
-    jaw = ET.SubElement(cameraProfile, "jaw")
+    yaw = ET.SubElement(cameraProfile, "yaw")
     pitch = ET.SubElement(cameraProfile, "pitch")
     roll = ET.SubElement(cameraProfile, "roll")
     # Set
     xPos.text = str(camera_pos_profile.xPos)
     yPos.text = str(camera_pos_profile.yPos)
     zPos.text = str(camera_pos_profile.zPos)
-    jaw.text = str(camera_pos_profile.jaw)
-    pitch.text = str(camera_pos_profile.ptch)
+    yaw.text = str(camera_pos_profile.yaw)
+    pitch.text = str(camera_pos_profile.pitch)
     roll.text = str(camera_pos_profile.roll)
 
     # Bar light
@@ -90,15 +124,15 @@ def setupProfilerToXml(camera_pos_profile, bar_pos_profile):
     xPos = ET.SubElement(barLightProfile, "xPos")
     zPos = ET.SubElement(barLightProfile, "yPos")
     yPos = ET.SubElement(barLightProfile, "zPos")
-    jaw = ET.SubElement(barLightProfile, "jaw")
+    yaw = ET.SubElement(barLightProfile, "yaw")
     pitch = ET.SubElement(barLightProfile, "pitch")
     roll = ET.SubElement(barLightProfile, "roll")
     # Set
     xPos.text = str(bar_pos_profile.xPos)
     yPos.text = str(bar_pos_profile.yPos)
     zPos.text = str(bar_pos_profile.zPos)
-    jaw.text = str(bar_pos_profile.jaw)
-    pitch.text = str(bar_pos_profile.ptch)
+    yaw.text = str(bar_pos_profile.yaw)
+    pitch.text = str(bar_pos_profile.pitch)
     roll.text = str(bar_pos_profile.roll)
 
     return data
