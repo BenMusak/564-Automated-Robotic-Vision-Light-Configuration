@@ -32,6 +32,10 @@
     let subfolders = JSON.parse('{{ folders | tojson}}'); //List with all the names of all subfolders in /static/images.
     let filename = JSON.parse('{{ images | tojson}}'); //2D list with all the filenames in all the subfolders.
     let chosenFolder = JSON.parse('{{chosenFolder | tojson}}'); //Variable with the index nr. for the chosen subfolder.
+    let xml_list = JSON.parse('{{xml_list | tojson}}'); //Variable that contains all the xml data.
+    console.log(xml_list)
+    console.log(subfolders)
+    console.log(filename)
 
     for(let i = 0; i < filename[chosenFolder].length; i++) {//We now "build" the html page depending on the chosen
         const para1 = document.createElement("div"); //Define a "div element"
@@ -68,14 +72,18 @@
         element5.appendChild(para5);
 
         const para6 = document.createElement("h3");
-        const node6 = document.createTextNode("Thumbnail label");
+        const node6 = document.createTextNode(filename[chosenFolder][i]);
         para6.appendChild(node6);
         const element6 = document.getElementById("caption"+i);
         element6.appendChild(para6);
 
         const para7 = document.createElement("p");
-        const node7 = document.createTextNode("This is just a test.");
+        const node7 = document.createTextNode("Camera exposure time: " + xml_list[i]["Profiles"]["CameraProfile"]["exp_time"]);
         para7.appendChild(node7);
+        const linebreak = document.createElement('br');
+        para7.appendChild(linebreak);
+        const node7_extra = document.createTextNode("Camera gain: " + xml_list[i]["Profiles"]["CameraProfile"]["gain"]);
+        para7.appendChild(node7_extra)
         const element7 = document.getElementById("caption"+i);
         element7.appendChild(para7);
 
@@ -114,7 +122,36 @@
             modalWrap.remove();
         }
         var main_title = filename[chosenFolder][i];
-        var tekst = filename[chosenFolder][i];
+        var tekst =
+        "<br> 0 = off, except for position and rotation of robot arms." +
+        "<br>" + 
+        "<br> Camera gain: " + xml_list[i]["Profiles"]["CameraProfile"]["gain"] +
+        "<br> Camera focus: " + xml_list[i]["Profiles"]["CameraProfile"]["focus"] +
+        "<br> Camera exposure time: " + xml_list[i]["Profiles"]["CameraProfile"]["exp_time"] +
+        "<br> Camera flash color: " + xml_list[i]["Profiles"]["CameraProfile"]["flash_c"] +
+        "<br> Camera chromatic lock:  " + xml_list[i]["Profiles"]["CameraProfile"]["chrom_L"] +
+        "<br> Camera IR filter: " + xml_list[i]["Profiles"]["CameraProfile"]["ir"] +
+        "<br>"+
+        "<br> Light bar exposure time: " + xml_list[i]["Profiles"]["barLightProfile"]["exp_time"]+
+        "<br> Light bar flash color: " + xml_list[i]["Profiles"]["barLightProfile"]["flash_c"]+
+        "<br> Light bar angle: " + xml_list[i]["Profiles"]["barLightProfile"]["angle"]+ "<br>" +
+        "<br> Backlight exposure time: " + xml_list[i]["Profiles"]["backlightProfile"]["exp_time"]+
+        "<br> Backlight flash color: " + xml_list[i]["Profiles"]["backlightProfile"]["flash_c"] +
+        "<br>" + 
+        "<br> Camera arm x position: " + xml_list[i]["Profiles"]["CameraPosProfile"]["xPos"] + 
+        "<br> Camera arm y position: " + xml_list[i]["Profiles"]["CameraPosProfile"]["yPos"] + 
+        "<br> Camera arm z position: " + xml_list[i]["Profiles"]["CameraPosProfile"]["zPos"] +
+        "<br> Camera arm yaw rotation: " + xml_list[i]["Profiles"]["CameraPosProfile"]["yaw"] + 
+        "<br> Camera arm pitch rotation: " + xml_list[i]["Profiles"]["CameraPosProfile"]["pitch"] + 
+        "<br> Camera arm roll rotation: " + xml_list[i]["Profiles"]["CameraPosProfile"]["roll"] + 
+        "<br>" + 
+        "<br> Light bar arm x position: " + xml_list[i]["Profiles"]["barLightPosProfile"]["xPos"] + 
+        "<br> Light bar arm y position: " + xml_list[i]["Profiles"]["barLightPosProfile"]["yPos"] + 
+        "<br> Light bar arm z position: " + xml_list[i]["Profiles"]["barLightPosProfile"]["zPos"] +
+        "<br> Light bar arm yaw rotation: " + xml_list[i]["Profiles"]["barLightPosProfile"]["yaw"] + 
+        "<br> Light bar arm pitch rotation: " + xml_list[i]["Profiles"]["barLightPosProfile"]["pitch"] + 
+        "<br> Light bar arm roll rotation: " + xml_list[i]["Profiles"]["barLightPosProfile"]["roll"]; 
+        
         modalWrap = document.createElement("div");
         modalWrap.innerHTML = `
         <!-- Modal -->
