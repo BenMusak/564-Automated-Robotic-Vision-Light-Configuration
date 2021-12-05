@@ -14,6 +14,9 @@ import testHandler as th
 import os
 import route_planner as rp
 import OPCUA
+import xml.etree.cElementTree as ET
+import xmltodict, json
+import re
 #import roboDK as rDK
 
 response = ""
@@ -23,7 +26,7 @@ test_state = False
 run = [True] # Used for stopping the RoboDK threads.We can simulate them using a list, since pointers do not exist in python.
 firstrun = False
 
-#ros_client = rb.startROS_Connect()
+ros_client = rb.startROS_Connect()
 OPCUA_client = OPCUA.connectAsClient("opc.tcp://192.168.87.210:4840")
 
 @app.route('/process', methods=['POST'])
@@ -155,7 +158,7 @@ def process():
 def home():
     """Renders the home page."""
     return render_template(
-        'index.html',
+        'status.html',
         title='Home Page',
         year=datetime.now().year,
     )
@@ -177,13 +180,33 @@ def folder():
 @app.route('/imageViewer/<index>',methods = ['GET', 'POST'])
 def img(index):
     (folders, images) = fh.getSubFolders() #We get list of subfolders and images in subfolders.
-    print(folders, images)
+    #print(folders)
+    #print(folders[int(index)])
+    path = "B_R_Illumination/static/XML/" + folders[int(index)]
+    xml_files = os.listdir(path)
+    nums = [re.findall('\d+',ss) for ss in xml_files] # extracts numbers from strings
+    numsint = [int(*n) for n in nums] # returns 0 for the empty list corresponding to the word
+    sorted_xml_files = [x for y, x in sorted(zip(numsint, xml_files))] # sorts s based on the sorting of nums2
+
+    print(sorted_xml_files)
+    xml_list = []
+    print(len(sorted_xml_files))
+    for file in sorted_xml_files:
+        fullname = os.path.join(path, file)
+        open_file = open(fullname, "r")
+        xml_dict = xmltodict.parse(open_file.read())
+        xml_list.append(xml_dict.copy())
+        open_file.close()
+
+    print(len(xml_list))
+    #print(folders, images)
     #We now return the image-viewer page and the three necessary variable for determining which subfolder have been chosen.
     return render_template(
         "imageViewer.html",
         folders=folders,
         chosenFolder=index,
-        images=images)
+        images=images,
+        xml_list=xml_list)
 
 #Route for changing parameters and starting tests.
 @app.route('/parameters', methods = ['GET', 'POST'])
