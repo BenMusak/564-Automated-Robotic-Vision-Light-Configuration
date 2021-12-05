@@ -32,6 +32,7 @@ def prepareTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, 
         x = (img_amount ** (1/3))
     else:
         x = (img_amount ** (1/4))
+    print("Number of steps for each loop = ", x)
     #Convert the iteration steps to gain levels and exposure time.
     gain_steps = (gain_max-gain_min)/x
     exposure_steps = (exposure_max-exposure_min)/x
@@ -78,69 +79,75 @@ def prepareTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, 
         input()
         print("Sending coordinates", camera_i, " to the camera.")
         UR5_cam_data = rb.ROS_SendGoal(ros_client, camera_i[0],camera_i[1],camera_i[2],"camera_robot", viewpoint, obj_hlw) #Move UR5 cam.
-        cameraarm_setup.xPos = UR5_cam_data["x"]
-        cameraarm_setup.yPos = UR5_cam_data["y"]
-        cameraarm_setup.zPos = UR5_cam_data["z"]
-        cameraarm_setup.jaw = UR5_cam_data["rotx"]
-        cameraarm_setup.pitch = UR5_cam_data["roty"]
-        cameraarm_setup.roll = UR5_cam_data["rotz"]
-        input()
+        if UR5_cam_data["status"]:
+            cameraarm_setup.xPos = UR5_cam_data["x"]
+            cameraarm_setup.yPos = UR5_cam_data["y"]
+            cameraarm_setup.zPos = UR5_cam_data["z"]
+            cameraarm_setup.yaw = UR5_cam_data["rotx"]
+            cameraarm_setup.pitch = UR5_cam_data["roty"]
+            cameraarm_setup.roll = UR5_cam_data["rotz"]
+            input()
 
-        #Computing the distance between object and camera lens.
-        delta_x = (cameraarm_setup.xPos - (center[0]+obj_hlw[2])) 
-        delta_y = (cameraarm_setup.yPos - (center[1]+obj_hlw[1]))
-        delta_z = (cameraarm_setup.zPos - (center[2]+viewpoint))
-        distance = sqrt(pow(delta_x,2)+pow(delta_y,2)+pow(delta_z,2))
-        #Computing the focus. Normally this would be equal to distance, but this camera is not calibrated,
-        # so we need to compensate with the following formula:
-        cameraprofile.focus_scale = -0.00021*pow(distance,2) + 0.908*distance + 4.6845
-        
-        #TODO Step2:  focus scale.
-        for light_i in light_route: #TODO: Need to be changed, so that it iterates trough the returned list from plan_light_route.
-            #TODO Step3: Move UR5 barlight robot and only if variable lightbar == "on.
-            if lightbar == "on":
-                UR5_light_data = rb.ROS_SendGoal(ros_client, light_i[0],light_i[1],light_i[2],"lightbar_robot", viewpoint, obj_hlw)
-                lightarm_setup.xPos = UR5_light_data["x"]
-                lightarm_setup.yPos = UR5_light_data["y"]
-                lightarm_setup.zPos = UR5_light_data["z"]
-                lightarm_setup.jaw = UR5_light_data["rotx"]
-                lightarm_setup.pitch = UR5_light_data["roty"]
-                lightarm_setup.roll = UR5_light_data["rotz"]
-                
-            #Move on when movement is confirmed.
-            #Maybe even receive pose for the robot arm.
-            for gain_i in np.arange(gain_min, gain_max, gain_steps):
-                for exposure_i in np.arange(exposure_min, exposure_max, exposure_steps):
-                    i = i+1
-                    #print("We reached the innr loops")
-                    #TODO Step4: Setup XML file and send to PLC with OPCUA
+            #Computing the distance between object and camera lens.
+            delta_x = (cameraarm_setup.xPos - (center[0]+obj_hlw[2])) 
+            delta_y = (cameraarm_setup.yPos - (center[1]+obj_hlw[1]))
+            delta_z = (cameraarm_setup.zPos - (center[2]+viewpoint))
+            distance = sqrt(pow(delta_x,2)+pow(delta_y,2)+pow(delta_z,2))
+            #Computing the focus. Normally this would be equal to distance, but this camera is not calibrated,
+            # so we need to compensate with the following formula:
+            cameraprofile.focus_scale = -0.00021*pow(distance,2) + 0.908*distance + 4.6845
+            
+            #TODO Step2:  focus scale.
+            for light_i in light_route: #TODO: Need to be changed, so that it iterates trough the returned list from plan_light_route.
+                #TODO Step3: Move UR5 barlight robot and only if variable lightbar == "on.
+                if lightbar == "on":
+                    UR5_light_data = rb.ROS_SendGoal(ros_client, light_i[0],light_i[1],light_i[2],"lightbar_robot", viewpoint, obj_hlw)
+                    if UR5_light_data["status"]:
+                        lightarm_setup.xPos = UR5_light_data["x"]
+                        lightarm_setup.yPos = UR5_light_data["y"]
+                        lightarm_setup.zPos = UR5_light_data["z"]
+                        lightarm_setup.yaw = UR5_light_data["rotx"]
+                        lightarm_setup.pitch = UR5_light_data["roty"]
+                        lightarm_setup.roll = UR5_light_data["rotz"]
+                        
+                        #Move on when movement is confirmed.
+                        #Maybe even receive pose for the robot arm.
+                        for gain_i in np.arange(gain_min, gain_max, gain_steps):
+                            for exposure_i in np.arange(exposure_min, exposure_max, exposure_steps):
+                                i = i+1
+                                #print("We reached the innr loops")
+                                #TODO Step4: Setup XML file and send to PLC with OPCUA
 
-                    cameraprofile.gain_level = int(gain_i)
-                    cameraprofile.exposure_time_camera = int(exposure_i)
+                                cameraprofile.gain_level = int(gain_i)
+                                cameraprofile.exposure_time_camera = int(exposure_i)
 
-                    if lightbar == "on":
-                        barlightprofile.exposure_time = int(exposure_i)
+                                if lightbar == "on":
+                                    barlightprofile.exposure_time = int(exposure_i)
 
-                    if backlight == "on":
-                        backlightprofile.exposure_time = int(exposure_i)
+                                if backlight == "on":
+                                    backlightprofile.exposure_time = int(exposure_i)
 
-                    #Create XML data.
-                    xmlData = xmlp.profilerToXML(cameraprofile, barlightprofile, backlightprofile, cameraarm_setup, lightarm_setup)
-                    #cameraProfile, barLightProfile1, backlightProfile = sp.setParameters()
+                                #Create XML data.
+                                xmlData = xmlp.profilerToXML(cameraprofile, barlightprofile, backlightprofile, cameraarm_setup, lightarm_setup)
+                                #cameraProfile, barLightProfile1, backlightProfile = sp.setParameters()
 
-                    #TODO Step5: Wait for confirmation from PLC that images was captures successfully.
-                    #OPCUA.getRootNode(OPCUA_client)
-                    #OPCUA.setParameters(OPCUA_client, cameraprofile, barlightprofile, backlightprofile)
-                    #OPCUA.setTrigger(OPCUA_client)
-                    print("Triggered camera")
-                    
-                    time.sleep(3)
+                                #TODO Step5: Wait for confirmation from PLC that images was captures successfully.
+                                #OPCUA.getRootNode(OPCUA_client)
+                                #OPCUA.setParameters(OPCUA_client, cameraprofile, barlightprofile, backlightprofile)
+                                #OPCUA.setTrigger(OPCUA_client)
+                                print("Triggered camera")
+                                
+                                time.sleep(0.2)
 
-                    #TODO Step6: Retrieve image from the cameras URL.
-                    ih.getURLImage(foldername, foldername, str(i))
-                    #TODO Step7: Log XML data.
-                    #Save XML data.
-                    xmlp.parseXMLtoFileAndWrite(xmlData, foldername, foldername, str(i))
+                                #TODO Step6: Retrieve image from the cameras URL.
+                                ih.getURLImage(foldername, foldername, str(i))
+                                #TODO Step7: Log XML data.
+                                #Save XML data.
+                                xmlp.parseXMLtoFileAndWrite(xmlData, foldername, foldername, str(i))
+                    else:
+                        print("Robotlightbar failed to move to position.")
+        else:
+            print("Robotcam failed to move to new position.")
     print(i)
     test_state = False
     return test_state
