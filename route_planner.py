@@ -37,7 +37,7 @@ def plan_camera_route(viewPoint, obj_hlw, feedback, step_x, step_y):
     i = 0  # Used for indexing xyzrpw list.
 
     #inspection_center_xyz = [0,0,0]
-    move_step_x = (max_x-min_y)/step_x
+    move_step_x = (max_x-min_x)/step_x
     move_step_y = (max_y-min_y)/step_y
     print("move_step: ", move_step_x)
     print("move_step: ", move_step_y)
@@ -128,14 +128,14 @@ def plan_light_route(viewPoint, obj_hlw, feedback, step_x, step_y):
     #Set the length, width and height of the Ellipsoid.
     #We add a buffer of value 1, so that the lightbar wont collide with the object.
     center = [0.367, 0.120, 0.154]
-    a = int(obj_hlw[1]) + 0.1
-    b = int(obj_hlw[2]) + 0.1
-    c = int(obj_hlw[0]) + 0.1
+    a = (obj_hlw[1] + 0.1)/2
+    b = (obj_hlw[2] + 0.1)/2
+    c = (obj_hlw[0] + 0.1)/2
     #Set for loop max and minimum
-    max_x = a/2
-    max_y = b/2
-    min_y = -max_y/2
-    min_x = -max_x/2
+    max_x = a
+    max_y = b
+    min_y = -max_y
+    min_x = -max_x
 
     xyz = []  # List for only XYZ coordinates.
     rpy = []  # List for inly Roll, Pitch and Yaw.
@@ -143,7 +143,7 @@ def plan_light_route(viewPoint, obj_hlw, feedback, step_x, step_y):
 
     # Focus point for the light bar.
 
-    move_step_x = (max_x-min_y)/step_x
+    move_step_x = (max_x-min_x)/step_x
     move_step_y = (max_y-min_y)/step_y
     print("move_step: ", move_step_x)
     print("move_step: ", move_step_y)
