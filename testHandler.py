@@ -13,9 +13,9 @@ from math import sqrt
 def get_color_nr(argument):
     switcher = {
         "Red": 1,
-        "Blue": 2,
-        "White": 3,
-        "IR": 4
+        "Blue": 3,
+        "White": 99,
+        "IR": 100
     }
     return switcher.get(argument, 0) #Return 0 if chosen color does no exist.
 
@@ -23,9 +23,9 @@ def prepareTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, 
     #Declaring max and min variables
     gain_max = 4
     gain_min = 0
-    exposure_max = 10000
+    exposure_max = 1000
     exposure_min = 0
-    center = [0.370, 0.160, 0.154]
+    center = [0.367, 0.120, 0.154]
     #Compute the number of iteration steps for images.
     #If the lightbar is off we have one less loop to iterate trough and iteration steps for images will therefore be calculated differently.
     if lightbar == "off":
@@ -67,8 +67,8 @@ def prepareTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, 
         barlightprofile.flash_color = 0
     if cameralight == "on":
         cameraprofile.flash_color_camera = get_color_nr(lightcolor)
-        if cameraprofile.flash_color_camera == 4:
-            cameraprofile.ir_filter = 1
+        if cameraprofile.flash_color_camera == 100:
+            cameraprofile.ir_filter = 0
     else:
         cameraprofile.flash_color_camera = 0
 
@@ -76,7 +76,7 @@ def prepareTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, 
     #Run the nedsted for loop and iterate over the routes, gain and exposure steps.
     for camera_i in camera_route:
         rb.ROS_SendGoal(ros_client, 1, -0.16, 0.75, "lightbar_robot", viewpoint, obj_hlw) #Move UR5 light to homing position.
-        input()
+        #input()
         print("Sending coordinates", camera_i, " to the camera.")
         UR5_cam_data = rb.ROS_SendGoal(ros_client, camera_i[0],camera_i[1],camera_i[2],"camera_robot", viewpoint, obj_hlw) #Move UR5 cam.
         if UR5_cam_data["status"]:
@@ -86,7 +86,7 @@ def prepareTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, 
             cameraarm_setup.yaw = UR5_cam_data["rotx"]
             cameraarm_setup.pitch = UR5_cam_data["roty"]
             cameraarm_setup.roll = UR5_cam_data["rotz"]
-            input()
+            #input()
 
             #Computing the distance between object and camera lens.
             delta_x = (cameraarm_setup.xPos - (center[0]+obj_hlw[2])) 
@@ -95,7 +95,7 @@ def prepareTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, 
             distance = sqrt(pow(delta_x,2)+pow(delta_y,2)+pow(delta_z,2))
             #Computing the focus. Normally this would be equal to distance, but this camera is not calibrated,
             # so we need to compensate with the following formula:
-            cameraprofile.focus_scale = -0.00021*pow(distance,2) + 0.908*distance + 4.6845
+            cameraprofile.focus_scale = int(-0.00021*pow(distance,2) + 0.908*distance + 4.6845)
             
             #TODO Step2:  focus scale.
             for light_i in light_route: #TODO: Need to be changed, so that it iterates trough the returned list from plan_light_route.
@@ -119,6 +119,7 @@ def prepareTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, 
                                 #TODO Step4: Setup XML file and send to PLC with OPCUA
 
                                 cameraprofile.gain_level = int(gain_i)
+                                cameraprofile.chromatic_lock = 1
                                 cameraprofile.exposure_time_camera = int(exposure_i)
 
                                 if lightbar == "on":
@@ -132,12 +133,12 @@ def prepareTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, 
                                 #cameraProfile, barLightProfile1, backlightProfile = sp.setParameters()
 
                                 #TODO Step5: Wait for confirmation from PLC that images was captures successfully.
-                                #OPCUA.getRootNode(OPCUA_client)
-                                #OPCUA.setParameters(OPCUA_client, cameraprofile, barlightprofile, backlightprofile)
-                                #OPCUA.setTrigger(OPCUA_client)
+                                OPCUA.getRootNode(OPCUA_client)
+                                OPCUA.setParameters(OPCUA_client, cameraprofile, barlightprofile, backlightprofile)
+                                OPCUA.setTrigger(OPCUA_client)
                                 print("Triggered camera")
                                 
-                                time.sleep(0.2)
+                                time.sleep(0.01)
 
                                 #TODO Step6: Retrieve image from the cameras URL.
                                 ih.getURLImage(foldername, foldername, str(i))

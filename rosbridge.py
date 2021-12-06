@@ -3,7 +3,7 @@ import roslibpy
 import roslibpy.actionlib
 
 def startROS_Connect():
-    client = roslibpy.Ros(host='localhost', port=9090)
+    client = roslibpy.Ros(host='localhost', port=8080)
     client.run()
 
     return client

@@ -18,7 +18,7 @@ def plan_camera_route(viewPoint, obj_hlw, feedback, step_x, step_y):
         obj_hlw (List): List that contains the height, length and width of the object.
         feedback (Boolean): Boolean for showing 3D plot of route.
     """
-    center = [0.370, 0.160, 0.154]
+    center = [0.367, 0.120, 0.154]
     #Set for loop max and minimum
     max_x = (obj_hlw[1] + 0.1)/2
     max_y = (obj_hlw[2] + 0.1)/2
@@ -56,7 +56,7 @@ def plan_camera_route(viewPoint, obj_hlw, feedback, step_x, step_y):
             z_hemsphe = (-x_it*x_it*a+c) + viewPoint + center[2]
             # We add 500 to move the hemisphere a bit away from origon.
             x_hemsphe = x_it + center[0]
-            y_hemsphe = 0 + center[1]
+            y_hemsphe = center[1]
 
             # Compute roll, pitch and yaw of the camera with fixed angles wrt. the robot frame.
             # vectors from camera frame to inspection frame
@@ -127,7 +127,7 @@ def plan_light_route(viewPoint, obj_hlw, feedback, step_x, step_y):
     """
     #Set the length, width and height of the Ellipsoid.
     #We add a buffer of value 1, so that the lightbar wont collide with the object.
-    center = [0.370, 0.160, 0.154]
+    center = [0.367, 0.120, 0.154]
     a = int(obj_hlw[1]) + 0.1
     b = int(obj_hlw[2]) + 0.1
     c = int(obj_hlw[0]) + 0.1
