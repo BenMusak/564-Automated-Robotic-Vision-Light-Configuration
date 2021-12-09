@@ -111,6 +111,7 @@ def plan_camera_route(viewPoint, obj_hlw, feedback, step_x, step_y):
         fig = plt.figure()
         ax = plt.axes(projection ='3d')
         ax.plot3D(X, Y, Z, 'green')
+        ax.scatter(X,Y,Z, 'blue')
         #Remember to close this for continuing the code.
         plt.show()
     return xyz
@@ -200,6 +201,7 @@ def plan_light_route(viewPoint, obj_hlw, feedback, step_x, step_y):
         fig = plt.figure()
         ax = plt.axes(projection ='3d')
         ax.plot3D(X, Y, Z, 'green')
+        ax.scatter(X,Y,Z, 'blue')
         #Remember to close this for continuing the code.
         plt.show()
 
