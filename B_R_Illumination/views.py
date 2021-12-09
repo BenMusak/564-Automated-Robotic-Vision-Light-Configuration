@@ -17,13 +17,16 @@ import OPCUA
 import xml.etree.cElementTree as ET
 import xmltodict, json
 import re
+import numpy as np
+import json 
+
 #import roboDK as rDK
 
 response = ""
 folders = []
 images =[]
 test_state = False
-run = [True] # Used for stopping the RoboDK threads.We can simulate them using a list, since pointers do not exist in python.
+run = [False, 0,0,0,0,0,0] # Used for stopping the RoboDK threads.We can simulate them using a list, since pointers do not exist in python.
 firstrun = False
 
 ros_client = rb.startROS_Connect()
@@ -132,18 +135,14 @@ def process():
 
     #If data is valid, then begin test. If not or test is already running, then return error message back to the client.
     if error_msg =="" and test_state == False:
-        print("No errors")
         response = "Successfully started the test"
         error_state = False
         test_state = True
         obj_dim = [int(obj_height)/1000, int(obj_length)/1000, int(obj_width)/1000]
-        print(obj_dim)
         viewPoint = int(view_pointz)/1000
-        #obj_dim = [0.1, 0.1, 0.1]
-        #viewPoint = [0.1, 0.1, 0.1]
-        print("viewPoint", viewPoint )
+        run[0] = True
         #Here we call the testing loop.
-        test_state = th.prepareTesting(OPCUA_client, ros_client, int(img_amount), test_name, lightColor, backlight, barlight1, camera, obj_dim, viewPoint) 
+        test_state = th.runTesting(OPCUA_client, ros_client, int(img_amount), test_name, lightColor, backlight, barlight1, camera, obj_dim, viewPoint, run) 
     elif test_state:
         response = "Test is already running."
         error_state = True
@@ -217,3 +216,23 @@ def parameters():
         #"test.html",
         "parameters.html"
         )
+
+@app.route('/statusupdate', methods=['GET'])
+def statusupdate():
+
+    return jsonify({'Teststatus' : run
+     })
+
+@app.route('/createplots', methods=['GET'])
+def createplots():
+    try:
+        cameraRoute = np.loadtxt("Hemisphere.csv", delimiter=",").tolist()
+    except:
+        cameraRoute=[]
+    try:
+        lightbarRoute = np.loadtxt("Ellipsoid.csv", delimiter=",").tolist()
+    except:
+        lightbarRoute=[]
+
+    return jsonify({'cameraRoute' : cameraRoute, 'lightbarRoute' : lightbarRoute
+     })
