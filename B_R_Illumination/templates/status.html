@@ -14,6 +14,9 @@
 </div>
 <body>
     <div id="plot"></div>
+    <div class="text-center">
+        <button type="submit" id="CancelTest" class="btn myButton begintest">Cancel Test</button>
+    </div>
 </body>
 <script>
     const arrayColumn = (arr, n) => arr.map(x => x[n]);
@@ -138,5 +141,17 @@
 createPlots();
 updatePlots();
 </script>
-
+<script>
+    $('#CancelTest').click(function(event){
+    $.ajax({
+        data : {
+        },
+        type : 'GET',
+        url : '/CancelTest'
+    })
+    .done(function(data){
+    });
+    event.preventDefault();
+    });
+    </script>
 {% endblock %}

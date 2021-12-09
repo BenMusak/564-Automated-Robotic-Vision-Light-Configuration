@@ -31,6 +31,11 @@ firstrun = False
 
 ros_client = rb.startROS_Connect()
 OPCUA_client = OPCUA.connectAsClient("opc.tcp://192.168.87.210:4840")
+try:
+    os.remove("Hemisphere.csv")
+    os.remove("Ellipsoid.csv")
+except:
+    pass
 
 @app.route('/process', methods=['POST'])
 def process():
@@ -235,4 +240,10 @@ def createplots():
         lightbarRoute=[]
 
     return jsonify({'cameraRoute' : cameraRoute, 'lightbarRoute' : lightbarRoute
+     })
+
+@app.route('/CancelTest', methods=['GET'])
+def cancelTest():
+    run[0] = False
+    return jsonify({
      })

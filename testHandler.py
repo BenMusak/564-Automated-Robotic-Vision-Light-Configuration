@@ -42,10 +42,10 @@ def runTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, back
         light_route = []
         light_route.append(1)
     else:
-        light_route = rp.plan_light_route(viewpoint, obj_hlw, True, x, x)
+        light_route = rp.plan_light_route(viewpoint, obj_hlw, False, x, x)
 
     #Camera route need to run no matter what.
-    camera_route = rp.plan_camera_route(viewpoint, obj_hlw, True, x, x)
+    camera_route = rp.plan_camera_route(viewpoint, obj_hlw, False, x, x)
 
     i = 0 #Just for keeping count of total iteration steps.
 
@@ -81,6 +81,8 @@ def runTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, back
         run[2] = camera_i[1]
         run[3] = camera_i[2]
         UR5_cam_data = rb.ROS_SendGoal(ros_client, camera_i[0],camera_i[1],camera_i[2],"camera_robot", viewpoint, obj_hlw) #Move UR5 cam.
+        if run[0] == False:
+            break
         if UR5_cam_data["status"]:
             cameraarm_setup.xPos = UR5_cam_data["x"]
             cameraarm_setup.yPos = UR5_cam_data["y"]
@@ -88,8 +90,6 @@ def runTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, back
             cameraarm_setup.yaw = UR5_cam_data["rotx"]
             cameraarm_setup.pitch = UR5_cam_data["roty"]
             cameraarm_setup.roll = UR5_cam_data["rotz"]
-            #input()
-
             #Computing the distance between object and camera lens.
             delta_x = (cameraarm_setup.xPos - (center[0]+obj_hlw[2])) 
             delta_y = (cameraarm_setup.yPos - (center[1]+obj_hlw[1]))
@@ -98,11 +98,10 @@ def runTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, back
             #Computing the focus. Normally this would be equal to distance, but this camera is not calibrated,
             # so we need to compensate with the following formula:
             cameraprofile.focus_scale = int(-0.00021*pow(distance,2) + 0.908*distance + 4.6845)
-            
-            #TODO Step2:  focus scale.
             for light_i in light_route: #TODO: Need to be changed, so that it iterates trough the returned list from plan_light_route.
-                #TODO Step3: Move UR5 barlight robot and only if variable lightbar == "on.
                 if lightbar == "on":
+                    if run[0] == False:
+                        break
                     run[4] = light_i[0]
                     run[5] = light_i[1]
                     run[6] = light_i[2]
@@ -119,6 +118,8 @@ def runTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, back
                         #Maybe even receive pose for the robot arm.
                         for gain_i in np.arange(gain_min, gain_max, gain_steps):
                             for exposure_i in np.arange(exposure_min, exposure_max, exposure_steps):
+                                if run[0] == False:
+                                    break
                                 run[1] = run[1]+1
                                 #print("We reached the innr loops")
                                 #TODO Step4: Setup XML file and send to PLC with OPCUA
