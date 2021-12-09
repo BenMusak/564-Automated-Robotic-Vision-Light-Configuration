@@ -19,7 +19,7 @@ def get_color_nr(argument):
     }
     return switcher.get(argument, 0) #Return 0 if chosen color does no exist.
 
-def prepareTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, backlight, lightbar, cameralight, obj_hlw, viewpoint):
+def runTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, backlight, lightbar, cameralight, obj_hlw, viewpoint, run):
     #Declaring max and min variables
     gain_max = 4
     gain_min = 0
@@ -68,16 +68,18 @@ def prepareTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, 
     if cameralight == "on":
         cameraprofile.flash_color_camera = get_color_nr(lightcolor)
         if cameraprofile.flash_color_camera == 100:
-            cameraprofile.ir_filter = 0
+            cameraprofile.ir_filter = 1
     else:
         cameraprofile.flash_color_camera = 0
-
 
     #Run the nedsted for loop and iterate over the routes, gain and exposure steps.
     for camera_i in camera_route:
         rb.ROS_SendGoal(ros_client, 1, -0.16, 0.75, "lightbar_robot", viewpoint, obj_hlw) #Move UR5 light to homing position.
         #input()
         print("Sending coordinates", camera_i, " to the camera.")
+        run[1] = camera_i[0]
+        run[2] = camera_i[1]
+        run[3] = camera_i[2]
         UR5_cam_data = rb.ROS_SendGoal(ros_client, camera_i[0],camera_i[1],camera_i[2],"camera_robot", viewpoint, obj_hlw) #Move UR5 cam.
         if UR5_cam_data["status"]:
             cameraarm_setup.xPos = UR5_cam_data["x"]
@@ -101,6 +103,9 @@ def prepareTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, 
             for light_i in light_route: #TODO: Need to be changed, so that it iterates trough the returned list from plan_light_route.
                 #TODO Step3: Move UR5 barlight robot and only if variable lightbar == "on.
                 if lightbar == "on":
+                    run[4] = light_i[0]
+                    run[5] = light_i[1]
+                    run[6] = light_i[2]
                     UR5_light_data = rb.ROS_SendGoal(ros_client, light_i[0],light_i[1],light_i[2],"lightbar_robot", viewpoint, obj_hlw)
                     if UR5_light_data["status"]:
                         lightarm_setup.xPos = UR5_light_data["x"]
@@ -114,7 +119,7 @@ def prepareTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, 
                         #Maybe even receive pose for the robot arm.
                         for gain_i in np.arange(gain_min, gain_max, gain_steps):
                             for exposure_i in np.arange(exposure_min, exposure_max, exposure_steps):
-                                i = i+1
+                                run[1] = run[1]+1
                                 #print("We reached the innr loops")
                                 #TODO Step4: Setup XML file and send to PLC with OPCUA
 
