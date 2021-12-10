@@ -8,6 +8,7 @@
 <div class="row">
     <div class="main">
         <h1 id="title">No test is running</h1>
+        <h3 id="counter"></h3>
     </div>
     <div>
     </div>
@@ -123,6 +124,7 @@
         if (data.Teststatus[0])
         {
             document.getElementById("title").innerHTML = "Test is running";
+            document.getElementById("counter").innerHTML = data.Teststatus[7] + " images have been taken.";
             update_cam_position = {type: 'scatter3d', 'x': [[data.Teststatus[1]]], 'y': [[data.Teststatus[2]]], 'z': [[data.Teststatus[3]]]};
             update_light_position = {type: 'scatter3d', 'x': [[data.Teststatus[4]]], 'y': [[data.Teststatus[5]]], 'z': [[data.Teststatus[6]]]};
 
