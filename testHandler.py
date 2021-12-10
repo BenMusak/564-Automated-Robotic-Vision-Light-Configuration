@@ -26,6 +26,7 @@ def runTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, back
     exposure_max = 1000
     exposure_min = 0
     center = [0.367, 0.120, 0.154]
+    light_bar_failed = False
     #Compute the number of iteration steps for images.
     #If the lightbar is off we have one less loop to iterate trough and iteration steps for images will therefore be calculated differently.
     if lightbar == "off":
@@ -113,46 +114,50 @@ def runTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, back
                         lightarm_setup.yaw = UR5_light_data["rotx"]
                         lightarm_setup.pitch = UR5_light_data["roty"]
                         lightarm_setup.roll = UR5_light_data["rotz"]
-                        
-                        #Move on when movement is confirmed.
-                        #Maybe even receive pose for the robot arm.
-                        for gain_i in np.arange(gain_min, gain_max, gain_steps):
-                            for exposure_i in np.arange(exposure_min, exposure_max, exposure_steps):
-                                if run[0] == False:
-                                    break
-                                run[1] = run[1]+1
-                                #print("We reached the innr loops")
-                                #TODO Step4: Setup XML file and send to PLC with OPCUA
-
-                                cameraprofile.gain_level = int(gain_i)
-                                cameraprofile.chromatic_lock = 1
-                                cameraprofile.exposure_time_camera = int(exposure_i)
-
-                                if lightbar == "on":
-                                    barlightprofile.exposure_time = int(exposure_i)
-
-                                if backlight == "on":
-                                    backlightprofile.exposure_time = int(exposure_i)
-
-                                #Create XML data.
-                                xmlData = xmlp.profilerToXML(cameraprofile, barlightprofile, backlightprofile, cameraarm_setup, lightarm_setup)
-                                #cameraProfile, barLightProfile1, backlightProfile = sp.setParameters()
-
-                                #TODO Step5: Wait for confirmation from PLC that images was captures successfully.
-                                OPCUA.getRootNode(OPCUA_client)
-                                OPCUA.setParameters(OPCUA_client, cameraprofile, barlightprofile, backlightprofile)
-                                OPCUA.setTrigger(OPCUA_client)
-                                print("Triggered camera")
-                                
-                                time.sleep(0.01)
-
-                                #TODO Step6: Retrieve image from the cameras URL.
-                                ih.getURLImage(foldername, foldername, str(i))
-                                #TODO Step7: Log XML data.
-                                #Save XML data.
-                                xmlp.parseXMLtoFileAndWrite(xmlData, foldername, foldername, str(i))
+                        light_bar_failed = False
                     else:
-                        print("Robotlightbar failed to move to position.")
+                        light_bar_failed = True
+                        
+                #Move on when movement is confirmed.
+                #Maybe even receive pose for the robot arm.
+                if light_bar_failed == False:
+                    for gain_i in np.arange(gain_min, gain_max, gain_steps):
+                        for exposure_i in np.arange(exposure_min, exposure_max, exposure_steps):
+                            if run[0] == False:
+                                break
+                            run[7] = run[7]+1
+                            #print("We reached the innr loops")
+                            #TODO Step4: Setup XML file and send to PLC with OPCUA
+
+                            cameraprofile.gain_level = int(gain_i)
+                            cameraprofile.chromatic_lock = 1
+                            cameraprofile.exposure_time_camera = int(exposure_i)
+
+                            if lightbar == "on":
+                                barlightprofile.exposure_time = int(exposure_i)
+
+                            if backlight == "on":
+                                backlightprofile.exposure_time = int(exposure_i)
+
+                            #Create XML data.
+                            xmlData = xmlp.profilerToXML(cameraprofile, barlightprofile, backlightprofile, cameraarm_setup, lightarm_setup)
+                            #cameraProfile, barLightProfile1, backlightProfile = sp.setParameters()
+
+                            #TODO Step5: Wait for confirmation from PLC that images was captures successfully.
+                            OPCUA.getRootNode(OPCUA_client)
+                            OPCUA.setParameters(OPCUA_client, cameraprofile, barlightprofile, backlightprofile)
+                            OPCUA.setTrigger(OPCUA_client)
+                            print("Triggered camera")
+                            
+                            time.sleep((exposure_i*(pow(10,-6)))*14)
+                            #print((exposure_i*(pow(10,-6)))*14)
+                            #TODO Step6: Retrieve image from the cameras URL.
+                            ih.getURLImage(foldername, foldername, str(run[7]))
+                            #TODO Step7: Log XML data.
+                            #Save XML data.
+                            xmlp.parseXMLtoFileAndWrite(xmlData, foldername, foldername, str(run[7]))
+                        else:
+                            print("Robotlightbar failed to move to position.")
         else:
             print("Robotcam failed to move to new position.")
     print(i)
