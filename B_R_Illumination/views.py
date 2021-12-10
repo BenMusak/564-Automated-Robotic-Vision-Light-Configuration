@@ -26,7 +26,7 @@ response = ""
 folders = []
 images =[]
 test_state = False
-run = [False, 0,0,0,0,0,0] # Used for stopping the RoboDK threads.We can simulate them using a list, since pointers do not exist in python.
+run = [False, 0,0,0,0,0,0,0] # Used for stopping the RoboDK threads.We can simulate them using a list, since pointers do not exist in python.
 firstrun = False
 
 ros_client = rb.startROS_Connect()
@@ -133,10 +133,6 @@ def process():
         error_msg = error_msg + " Test name already exist. \n"
     else:
         print("Name is all good.")
-
-    #rb.startROS_Connect()
-    #response = BR.connect()
-    #ih.getURLImage("subfolder1", "img", str(i))
 
     #If data is valid, then begin test. If not or test is already running, then return error message back to the client.
     if error_msg =="" and test_state == False:
