@@ -37,8 +37,8 @@ def plan_camera_route(viewPoint, obj_hlw, feedback, step_x, step_y):
     i = 0  # Used for indexing xyzrpw list.
 
     #inspection_center_xyz = [0,0,0]
-    move_step_x = (max_x-min_x)/step_x
-    move_step_y = (max_y-min_y)/step_y
+    move_step_x = (max_x-min_x)/(step_x/2)
+    move_step_y = (max_y-min_y)/(step_y/2)
     print("move_step: ", move_step_x)
     print("move_step: ", move_step_y)
 
@@ -141,8 +141,8 @@ def plan_light_route(viewPoint, obj_hlw, feedback, step_x, step_y):
 
     # Focus point for the light bar.
 
-    move_step_x = (max_x-min_x)/step_x
-    move_step_y = (max_y-min_y)/step_y
+    move_step_x = (max_x-min_x)/(sqrt(step_x)+1)
+    move_step_y = (max_y-min_y)/(sqrt(step_y)+1)
     print("move_step: ", move_step_x)
     print("move_step: ", move_step_y)
     # Generating the 3D points for an hemisphere
