@@ -15,8 +15,10 @@
 </div>
 <body>
     <div id="plot"></div>
-    <div class="text-center">
-        <button type="submit" id="CancelTest" class="btn myButton begintest">Cancel Test</button>
+    <div class="sticky-top">
+        <div class="text-center">
+            <button type="submit" id="CancelTest" class="btn myButton begintest">Cancel Test</button>
+        </div>
     </div>
 </body>
 <script>
@@ -42,6 +44,8 @@
             x: arrayColumn(data.cameraRoute, 0),
             y: arrayColumn(data.cameraRoute, 1),
             z: arrayColumn(data.cameraRoute, 2),
+            xaxis: "x",
+            yaxis: "y",
             line: { width: 6, color: "rgb(0, 0, 0)"},
             marker: { size: 3.5, color: "rgb(127, 127, 127)", cmin: -20, cmax: 50},
             scene: "scene1"
@@ -59,6 +63,8 @@
             x: arrayColumn(data.lightbarRoute, 0),
             y: arrayColumn(data.lightbarRoute, 1),
             z: arrayColumn(data.lightbarRoute, 2),
+            xaxis: "x2",
+            yaxis: "y2",
             line: { width: 6, color: "rgb(0, 0, 0)"},
             marker: { size: 3.5, color: "rgb(127, 127, 127)", cmin: -20, cmax: 50},
             scene: "scene2"
@@ -68,22 +74,51 @@
             marker: { size: 3.5, color: "rgb(255, 136, 0)", cmin: -20, cmax: 50},
             scene: "scene2"
             };
+            //                margin: {l: 0,r: 0,b: 0,t: 0,pad: 0},
             var layout = {
+                title: 'Plot of routes (orange point is current goal)',
+                font: {color: 'black'},
                 scene1: {
                     domain: {
-                        x: [0.0,  0.5],
-                        y: [0.5, 1.0]
+                        x: [0,  0.5],
+                        y: [0.0, 1.0]
                     }},
                 scene2: {
                     domain: {
-                        x: [0.5, 1],
-                        y: [0.5, 1.0]
+                        x: [0.5, 1.0],
+                        y: [0.0, 1.0]
                     }},
-                height: 600,
-                margin: {l: 0,r: 0,b: 0,t: 0,pad: 10}
-                }
-                
-
+                height: 450,
+                showlegend: false,
+                annotations: [{
+                    text: "Camera route",
+                    font: {
+                    size: 16,
+                    color: 'black',
+                    },
+                    showarrow: false,
+                    align: 'center',
+                    x: 0.22,
+                    y: 1,
+                    xref: 'paper',
+                    yref: 'paper',
+                },
+                    {
+                        text: "Light bar route",
+                    font: {
+                    size: 16,
+                    color: 'black',
+                    },
+                    showarrow: false,
+                    align: 'center',
+                    x: 0.78,
+                    y: 1,
+                    xref: 'paper',
+                    yref: 'paper',
+                    }
+                ]
+}
+            
             camera_group = [trace_cam_route, trace_cam_dot]
             light_group = [trace_light__route, trace_light_dot]
             Plotly.newPlot('plot', [trace_cam_route, trace_cam_dot, trace_light__route, trace_light_dot], layout);
@@ -105,8 +140,8 @@
             marker: { size: 3.5, color: "rgb(255, 136, 0)", cmin: -20, cmax: 50},
             };
             var layout = {
-                height: 300,
-                margin: {l: 0,r: 0,b: 0,t: 0,pad: 10}
+                height: 450,
+                showlegend: false
                 }
             Plotly.newPlot('plot', [trace_cam_route, trace_cam_dot], layout);
         }
@@ -124,7 +159,7 @@
         if (data.Teststatus[0])
         {
             document.getElementById("title").innerHTML = "Test is running";
-            document.getElementById("counter").innerHTML = data.Teststatus[7] + " images have been taken.";
+            document.getElementById("counter").innerHTML = data.Teststatus[7] + " image(s) have been taken.";
             update_cam_position = {type: 'scatter3d', 'x': [[data.Teststatus[1]]], 'y': [[data.Teststatus[2]]], 'z': [[data.Teststatus[3]]]};
             update_light_position = {type: 'scatter3d', 'x': [[data.Teststatus[4]]], 'y': [[data.Teststatus[5]]], 'z': [[data.Teststatus[6]]]};
 
@@ -136,6 +171,7 @@
         else
         {
             document.getElementById("title").innerHTML = "No test is running";
+            document.getElementById("counter").innerHTML = "";
         }
     });
     setTimeout(updatePlots, 1000);
