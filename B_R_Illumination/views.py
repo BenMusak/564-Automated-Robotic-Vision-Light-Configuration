@@ -31,11 +31,11 @@ firstrun = False
 
 ros_client = rb.startROS_Connect()
 OPCUA_client = OPCUA.connectAsClient("opc.tcp://192.168.87.210:4840")
-try:
-    os.remove("Hemisphere.csv")
-    os.remove("Ellipsoid.csv")
-except:
-    pass
+#try:
+    #os.remove("camera_route.csv")
+    #os.remove("lightbar_route.csv")
+#except:
+    #pass
 
 @app.route('/process', methods=['POST'])
 def process():
@@ -227,11 +227,11 @@ def statusupdate():
 @app.route('/createplots', methods=['GET'])
 def createplots():
     try:
-        cameraRoute = np.loadtxt("Hemisphere.csv", delimiter=",").tolist()
+        cameraRoute = np.loadtxt("camera_route.csv", delimiter=",").tolist()
     except:
         cameraRoute=[]
     try:
-        lightbarRoute = np.loadtxt("Ellipsoid.csv", delimiter=",").tolist()
+        lightbarRoute = np.loadtxt("lightbar_route.csv", delimiter=",").tolist()
     except:
         lightbarRoute=[]
 

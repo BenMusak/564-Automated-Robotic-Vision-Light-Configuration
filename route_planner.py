@@ -91,20 +91,17 @@ def plan_camera_route(viewPoint, obj_hlw, feedback, step_x, step_y):
         min_y = -min_y
         step_y = -step_y
 
-    print("Number of points in hemossphere: ",len(xyz))
-    with open('Hemisphere.csv', 'w', encoding='UTF8') as f:
+    print("Number of points in camera route: ",len(xyz))
+    with open('camera_route.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
         for pos in xyz:
             writer.writerow(pos)
 
     print("path generated", len(xyz))
 
-    #Save X, Y and Z coordinates as a csv file.
-    print("Number of points in hemossphere: ",len(xyz))
-
     #If we want feedback, we can show the 3D path plot. 
     if feedback:
-        DataAll1D = np.loadtxt("Hemisphere.csv", delimiter=",")
+        DataAll1D = np.loadtxt("camera_route.csv", delimiter=",")
         X = DataAll1D[:,0]
         Y = DataAll1D[:,1]
         Z = DataAll1D[:,2]
@@ -184,8 +181,8 @@ def plan_light_route(viewPoint, obj_hlw, feedback, step_x, step_y):
         move_step_y = -move_step_y
 
     #Save X, Y and Z coordinates as a csv file.
-    print("Number of points in hemossphere: ",len(xyz))
-    with open('Ellipsoid.csv', 'w', encoding='UTF8') as f:
+    print("Number of points in light bar route: ",len(xyz))
+    with open('lightbar_route.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
         for pos in xyz:
             writer.writerow(pos)
@@ -194,7 +191,7 @@ def plan_light_route(viewPoint, obj_hlw, feedback, step_x, step_y):
     
     #If we want feedback, we can show the 3D path plot. 
     if feedback:
-        DataAll1D = np.loadtxt("Ellipsoid.csv", delimiter=",")
+        DataAll1D = np.loadtxt("lightbar_route.csv", delimiter=",")
         X = DataAll1D[:,0]
         Y = DataAll1D[:,1]
         Z = DataAll1D[:,2]
