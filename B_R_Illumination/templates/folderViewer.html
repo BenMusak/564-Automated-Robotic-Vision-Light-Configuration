@@ -10,20 +10,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Image folders</title>
-
-    <link rel="stylesheet" href="/static/css/bootstrap_maxcdn.min.css">
-    <link href="/static/css/google_font.css" rel="stylesheet">
+    <!--<link href="/static/css/google_font.css" rel="stylesheet">-->
+    <link rel="stylesheet" type="text/css" href="/static/css/font.css" />
     <!--<link rel="stylesheet" href="/static/css/baguetteBox.min.css">-->
+    <link rel="stylesheet" href="/static/css/baguetteBox.min.css">
     <link rel="stylesheet" href="/static/imageViewer.css">
+    <title>Image folders</title>
 
 </head>
 <body>
 
 <div class="container gallery-container">
-
-    <h1>Image folders</h1>
-
+    
+    <!--<h1>Image folders</h1>-->
     <p class="page-description text-center">Folders for each test</p>
     
     <div class="tz-gallery">
@@ -59,6 +58,7 @@
         element3.appendChild(para3);
 
         const para4 = document.createElement("img");
+        para4.className= ("card-img-top");
         para4.id = ("img"+i);
         para4.src = ("/static/images/" + subfolders[i] +"/" +filename[i][0]);
         para4.alt = ("Rails");
@@ -72,7 +72,7 @@
         element5.appendChild(para5);
 
         const para6 = document.createElement("h3");
-        const node6 = document.createTextNode("Thumbnail label");
+        const node6 = document.createTextNode("Folder: " + subfolders[i]);
         para6.appendChild(node6);
         const element6 = document.getElementById("caption"+i);
         element6.appendChild(para6);
@@ -92,7 +92,7 @@
         const para10 = document.createElement("button");
         para10.type = ("button");
         para10.className = ("btn btn-sm btn-outline-secondary");
-        const node10 = document.createTextNode("View");
+        const node10 = document.createTextNode("View parameters");
         para10.appendChild(node10);
         const element10 = document.getElementById("btn-group"+i);
         element10.appendChild(para10);

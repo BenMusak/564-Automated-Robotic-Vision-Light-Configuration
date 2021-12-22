@@ -1,13 +1,26 @@
+# Branch features.
+- Script that makes it possible to communicate with ROS nodes.
+
 # Group 564, Automated Robotic Vision Light Configuration
 5th semester github for our project at AAU.
 
 # Dependencies
 Libraries required to run the program
 - Flask 1.1 
+- roslibpy
+- Numpy
+- Colorama
+
+# Numpy Anaconda issues.
+- I you experience problems when installing numpy using Anaconda, then try pip install (Worked for me).
+
 
 # How to run
  - Create a custom python environment that includes all the necesary dependencies. 
  - Link the python environment to the project.
+ - Open Robodk and import an UR5e from the library.
+ - Add at least one folder in the /static/images/ directory.
+    - OBS! Do not add images directly into the /static/images folder, only subfolders!
  - Run the "runserver.py" file.
 
 # Rules
@@ -18,12 +31,12 @@ Setup the rules here
 - The code sholud follow the topolegy overview
 
 # Tasks 
-- [ ] Update HTML files with appropriate layout. 
-- [ ] Add socket dependency
-- [ ] Create script for tcp/ip or udp/ip communication with B&R Automation studio.
+- [ ] 
+- [ ] 
 
 # Issues
-- [ ] Issues tasks here 
+- [ ] Server crashes if there are images in the /static/images folder.
+- [ ]
 
 # Links
 Further information about the Flask framework can be found here: https://code.visualstudio.com/docs/python/tutorial-flask 

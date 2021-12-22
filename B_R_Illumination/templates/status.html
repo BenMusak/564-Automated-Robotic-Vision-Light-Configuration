@@ -1,0 +1,195 @@
+{% extends "layout.html" %}
+{% block content %}
+<head>
+
+    <script src="https://cdn.plot.ly/plotly-2.6.3.min.js"></script>
+
+</head>
+<div class="row">
+    <div class="main">
+        <h1 id="title">No test is running</h1>
+        <h3 id="counter"></h3>
+    </div>
+    <div>
+    </div>
+</div>
+<body>
+    <div id="plot"></div>
+    <div class="sticky-top">
+        <div class="text-center">
+            <button type="submit" id="CancelTest" class="btn myButton begintest">Cancel Test</button>
+        </div>
+    </div>
+</body>
+<script>
+    const arrayColumn = (arr, n) => arr.map(x => x[n]);
+    var x = [];
+    var y = [];
+    var z = [];
+    function createPlots(){
+        $.ajax({
+        data : {
+        },
+        type : 'GET',
+        url : '/createplots'
+    })
+    .done(function(data){
+        //console.log(arrayColumn(data.cameraRoute, 0))
+        if (arrayColumn(data.cameraRoute, 0).length > 0 && arrayColumn(data.lightbarRoute, 0).length > 0)
+        {
+            //Camera plots
+            var trace_cam_route = {
+            type: 'scatter3d',
+            mode: 'lines+markers',
+            x: arrayColumn(data.cameraRoute, 0),
+            y: arrayColumn(data.cameraRoute, 1),
+            z: arrayColumn(data.cameraRoute, 2),
+            xaxis: "x",
+            yaxis: "y",
+            line: { width: 6, color: "rgb(0, 0, 0)"},
+            marker: { size: 3.5, color: "rgb(127, 127, 127)", cmin: -20, cmax: 50},
+            scene: "scene1"
+            };
+            var trace_cam_dot = {
+            type: 'scatter3d',
+            marker: { size: 3.5, color: "rgb(255, 136, 0)", cmin: -20, cmax: 50},
+            scene: "scene1"
+            };
+
+            //Light bar plots
+            var trace_light__route = {
+            type: 'scatter3d',
+            mode: 'lines+markers',
+            x: arrayColumn(data.lightbarRoute, 0),
+            y: arrayColumn(data.lightbarRoute, 1),
+            z: arrayColumn(data.lightbarRoute, 2),
+            xaxis: "x2",
+            yaxis: "y2",
+            line: { width: 6, color: "rgb(0, 0, 0)"},
+            marker: { size: 3.5, color: "rgb(127, 127, 127)", cmin: -20, cmax: 50},
+            scene: "scene2"
+            };
+            var trace_light_dot = {
+            type: 'scatter3d',
+            marker: { size: 3.5, color: "rgb(255, 136, 0)", cmin: -20, cmax: 50},
+            scene: "scene2"
+            };
+            //                margin: {l: 0,r: 0,b: 0,t: 0,pad: 0},
+            var layout = {
+                title: 'Plot of routes (orange point is current goal)',
+                font: {color: 'black'},
+                scene1: {
+                    domain: {
+                        x: [0,  0.5],
+                        y: [0.0, 1.0]
+                    }},
+                scene2: {
+                    domain: {
+                        x: [0.5, 1.0],
+                        y: [0.0, 1.0]
+                    }},
+                height: 450,
+                showlegend: false,
+                annotations: [{
+                    text: "Camera route",
+                    font: {
+                    size: 16,
+                    color: 'black',
+                    },
+                    showarrow: false,
+                    align: 'center',
+                    x: 0.22,
+                    y: 1,
+                    xref: 'paper',
+                    yref: 'paper',
+                },
+                    {
+                        text: "Light bar route",
+                    font: {
+                    size: 16,
+                    color: 'black',
+                    },
+                    showarrow: false,
+                    align: 'center',
+                    x: 0.78,
+                    y: 1,
+                    xref: 'paper',
+                    yref: 'paper',
+                    }
+                ]
+}
+            
+            camera_group = [trace_cam_route, trace_cam_dot]
+            light_group = [trace_light__route, trace_light_dot]
+            Plotly.newPlot('plot', [trace_cam_route, trace_cam_dot, trace_light__route, trace_light_dot], layout);
+            
+        }
+        else if (arrayColumn(data.cameraRoute, 0).length > 0)
+        {
+            var trace_cam_route = {
+            type: 'scatter3d',
+            mode: 'lines+markers',
+            x: arrayColumn(data.cameraRoute, 0),
+            y: arrayColumn(data.cameraRoute, 1),
+            z: arrayColumn(data.cameraRoute, 2),
+            line: { width: 6, color: "rgb(0, 0, 0)"},
+            marker: { size: 3.5, color: "rgb(127, 127, 127)", cmin: -20, cmax: 50},
+            };
+            var trace_cam_dot = {
+            type: 'scatter3d',
+            marker: { size: 3.5, color: "rgb(255, 136, 0)", cmin: -20, cmax: 50},
+            };
+            var layout = {
+                height: 450,
+                showlegend: false
+                }
+            Plotly.newPlot('plot', [trace_cam_route, trace_cam_dot], layout);
+        }
+    });
+}
+    function updatePlots(){
+        $.ajax({
+        data : {
+        },
+        type : 'GET',
+        url : '/statusupdate'
+    })
+    .done(function(data){
+        console.log(data.Teststatus[0])
+        if (data.Teststatus[0])
+        {
+            document.getElementById("title").innerHTML = "Test is running";
+            document.getElementById("counter").innerHTML = data.Teststatus[7] + " image(s) have been taken.";
+            update_cam_position = {type: 'scatter3d', 'x': [[data.Teststatus[1]]], 'y': [[data.Teststatus[2]]], 'z': [[data.Teststatus[3]]]};
+            update_light_position = {type: 'scatter3d', 'x': [[data.Teststatus[4]]], 'y': [[data.Teststatus[5]]], 'z': [[data.Teststatus[6]]]};
+
+            //Plotly.update('camera_plot', update_color, {}, [1]);
+            Plotly.update('plot', update_cam_position, {}, [1]);
+            Plotly.update('plot', update_light_position, {}, [3]);
+
+        }
+        else
+        {
+            document.getElementById("title").innerHTML = "No test is running";
+            document.getElementById("counter").innerHTML = "";
+        }
+    });
+    setTimeout(updatePlots, 1000);
+}
+createPlots();
+updatePlots();
+</script>
+<script>
+    $('#CancelTest').click(function(event){
+    $.ajax({
+        data : {
+        },
+        type : 'GET',
+        url : '/CancelTest'
+    })
+    .done(function(data){
+    });
+    event.preventDefault();
+    });
+    </script>
+{% endblock %}
