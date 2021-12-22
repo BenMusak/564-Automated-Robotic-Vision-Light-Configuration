@@ -19,9 +19,9 @@ Dependency | Command to install
 
 
 # How to run
+ - Clone or Download the code.
  - Create a custom python environment that includes all the necesary dependencies. 
  - Link the python environment to the project.
- - Open Robodk and import an UR5e from the library.
  - Add at least one folder in the /static/images/ directory.
     - OBS! Do not add images directly into the /static/images folder, only subfolders!
  - Run the "runserver.py" file.
