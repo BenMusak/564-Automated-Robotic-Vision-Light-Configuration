@@ -1,11 +1,7 @@
-from io import IncrementalNewlineDecoder
 from math import atan, atan2, pi, sqrt
 import csv
 import numpy as np
-from robodk.robodk import *
-from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
-import pandas
 
 def plan_camera_route(viewPoint, obj_hlw, feedback, step_x, step_y):
     """Computes the X, Y and Z Coordinates for the camera route depending on the viewpoint coordinates and object dimension.
