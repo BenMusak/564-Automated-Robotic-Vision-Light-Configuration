@@ -28,8 +28,13 @@ images =[]
 test_state = False
 run = [False, 0,0,0,0,0,0,0] # Used for stopping the RoboDK threads.We can simulate them using a list, since pointers do not exist in python.
 firstrun = False
+ROS_Connected = True
 
-ros_client = rb.startROS_Connect()
+try:
+    ros_client = rb.startROS_Connect()
+except:
+    print("Could not connect to ROS server.")
+    ROS_Connected = False
 OPCUA_client = OPCUA.connectAsClient("opc.tcp://192.168.87.210:4840")
 #try:
     #os.remove("camera_route.csv")
@@ -143,7 +148,8 @@ def process():
         viewPoint = int(view_pointz)/1000
         run[0] = True
         #Here we call the testing loop.
-        test_state = th.runTesting(OPCUA_client, ros_client, int(img_amount), test_name, lightColor, backlight, barlight1, camera, obj_dim, viewPoint, run) 
+        if ROS_Connected:
+            test_state = th.runTesting(OPCUA_client, ros_client, int(img_amount), test_name, lightColor, backlight, barlight1, camera, obj_dim, viewPoint, run) 
     elif test_state:
         response = "Test is already running."
         error_state = True
