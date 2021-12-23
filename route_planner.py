@@ -129,9 +129,9 @@ def plan_light_route(viewPoint, obj_hlw, feedback, step_x, step_y):
     #Set the length, width and height of the Ellipsoid.
     #We add a buffer of value 1, so that the lightbar wont collide with the object.
     center = [0.367, 0.120, 0.154]
-    a = (obj_hlw[1] + 0.1)/2
-    b = (obj_hlw[2] + 0.1)/2
-    c = (obj_hlw[0] + 0.1)/2
+    a = (obj_hlw[1] + 0.3)/2
+    b = (obj_hlw[2] + 0.3)/2
+    c = (obj_hlw[0] + 0.3)/2
     #Set for loop max and minimum
     max_x = a
     max_y = b
