@@ -9,6 +9,7 @@ import OPCUA
 import setupParameters as sp
 import time
 from math import sqrt
+from numpy import linalg
 
 def get_color_nr(argument):
     switcher = {
@@ -21,10 +22,10 @@ def get_color_nr(argument):
 
 def runTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, backlight, lightbar, cameralight, obj_hlw, viewpoint, run):
     #Declaring max and min variables
-    gain_max = 4
+    gain_max = 1
     gain_min = 0
-    exposure_max = 1000
-    exposure_min = 0
+    exposure_max = 200
+    exposure_min = 10
     center = [0.367, 0.120, 0.154]
     light_bar_failed = False
     #Compute the number of iteration steps for images.
@@ -92,10 +93,12 @@ def runTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, back
             cameraarm_setup.pitch = UR5_cam_data["roty"]
             cameraarm_setup.roll = UR5_cam_data["rotz"]
             #Computing the distance between object and camera lens.
-            delta_x = (cameraarm_setup.xPos - (center[0]+obj_hlw[2])) 
-            delta_y = (cameraarm_setup.yPos - (center[1]+obj_hlw[1]))
-            delta_z = (cameraarm_setup.zPos - (center[2]+viewpoint))
-            distance = sqrt(pow(delta_x,2)+pow(delta_y,2)+pow(delta_z,2))
+            p1 = np.array([cameraarm_setup.xPos,cameraarm_setup.yPos,cameraarm_setup.zPos])
+            p2 = np.array([center[0],center[1],center[2]+viewpoint])
+            distance = linalg.norm(p1-p2)*1000
+            print("Pose cam:", cameraarm_setup.xPos, cameraarm_setup.yPos, cameraarm_setup.zPos)
+            print("Pose viewpoint:", center[0], center[1], center[2]+viewpoint)
+            print("Distance from cam to viewpoint: ", distance)
             #Computing the focus. Normally this would be equal to distance, but this camera is not calibrated,
             # so we need to compensate with the following formula:
             cameraprofile.focus_scale = int(-0.00021*pow(distance,2) + 0.908*distance + 4.6845)
@@ -149,7 +152,8 @@ def runTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, back
                             OPCUA.setTrigger(OPCUA_client)
                             print("Triggered camera")
                             
-                            time.sleep((exposure_i*(pow(10,-6)))*14)
+                            #time.sleep((exposure_i*(pow(10,-6)))*14)
+                            time.sleep(0.1)
                             #print((exposure_i*(pow(10,-6)))*14)
                             #TODO Step6: Retrieve image from the cameras URL.
                             ih.getURLImage(foldername, foldername, str(run[7]))
@@ -162,6 +166,7 @@ def runTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, back
             print("Robotcam failed to move to new position.")
     print(i)
     test_state = False
+    run[7] = 0
     return test_state
 
 
