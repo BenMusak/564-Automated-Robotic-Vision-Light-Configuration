@@ -27,16 +27,18 @@
             </div>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.1/socket.io.js"></script>
     <script type="text/javascript">
-        let subfolders = JSON.parse('{{ folders | tojson}}'); //List with all the names of all subfolders in /static/images.
-        let filename = JSON.parse('{{ images | tojson}}'); //2D list with all the filenames in all the subfolders.
-        let chosenFolder = JSON.parse('{{chosenFolder | tojson}}'); //Variable with the index nr. for the chosen subfolder.
-        let settings_list = JSON.parse('{{ settings_list | tojson }}');
+        var socket;
+        $(document).ready(function () {
+            socket = io.connect('http://127.0.0.1:5000');
+        });
+        let id = JSON.parse('{{ id | tojson}}');
+        let images = JSON.parse('{{ images | tojson}}');
+        let passTest = JSON.parse('{{passTest | tojson}}');
 
-        console.log(subfolders)
-        console.log(filename)
-
-        for (let i = 0; i < filename[chosenFolder].length; i++) {//We now "build" the html page depending on the chosen
+        for (let i = 0; i < images.length; i++) {//We now "build" the html page depending on the chosen
             const para1 = document.createElement("div"); //Define a "div element"
             para1.className = ("col-sm-6 col-md-4"); //Define the style class.
             para1.id = ("col" + i); //Define a ID to the element.
@@ -52,14 +54,14 @@
             const para3 = document.createElement("a");
             para3.className = ("lightbox");
             para3.id = ("lightbox" + i);
-            para3.href = ("/static/images/" + subfolders[chosenFolder] + "/" + filename[chosenFolder][i]);
+            para3.href = ("../../" + images[i]);
             const element3 = document.getElementById("thumbnail" + i);
             element3.appendChild(para3);
 
             const para4 = document.createElement("img");
             para4.className = ("card-img-top");
             para4.id = ("img" + i);
-            para4.src = ("/static/images/" + subfolders[chosenFolder] + "/" + filename[chosenFolder][i]);
+            para4.src = ("../" + images[i]);
             para4.alt = ("Rails");
             const element4 = document.getElementById("lightbox" + i);
             element4.appendChild(para4);
@@ -70,22 +72,6 @@
             const element5 = document.getElementById("thumbnail" + i);
             element5.appendChild(para5);
 
-            const para6 = document.createElement("h3");
-            const node6 = document.createTextNode(filename[chosenFolder][i]);
-            para6.appendChild(node6);
-            const element6 = document.getElementById("caption" + i);
-            element6.appendChild(para6);
-
-            const para7 = document.createElement("p");
-            const node7 = document.createTextNode("Camera exposure time: " + settings_list[5]);
-            para7.appendChild(node7);
-            const linebreak = document.createElement('br');
-            para7.appendChild(linebreak);
-            const node7_extra = document.createTextNode("Camera gain: " + settings_list[3]);
-            para7.appendChild(node7_extra)
-            const element7 = document.getElementById("caption" + i);
-            element7.appendChild(para7);
-
             const para9 = document.createElement("div");
             para9.className = ("btn-group");
             para9.id = ("btn-group" + i);
@@ -94,9 +80,16 @@
 
             const para10 = document.createElement("button");
             para10.type = ("button");
-            para10.id = ("button" + i);
+            para10.id = (id[i]);
             para10.className = ("btn btn-sm btn-outline-secondary");
-            para10.onclick = function () { showModal(chosenFolder, i) };
+            para10.onclick = function () {
+                socket.emit('View button clicked', {
+                    who: this.id
+                });
+                socket.on('image settings', (input) => {
+                    showModal(input);
+                });
+            };
             const node10 = document.createTextNode("View");
             para10.appendChild(node10);
             const element10 = document.getElementById("btn-group" + i);
@@ -104,8 +97,15 @@
 
             var para11 = document.createElement('input');
             para11.type = "checkbox";
-            para11.id = ("checkbox" + i);
-            if (settings_list[26] === 1) {
+            para11.id = (id[i]);
+            para11.onchange = function () {
+                socket.emit('Change pass', {
+
+                    who: this.id,
+                    value: this.checked
+                });
+            };
+            if (passTest[i] === 1) {
                 para11.checked = true;
             }
             else {
@@ -123,40 +123,42 @@
     <script>
         var modalWrap = null
         //var tekst = "This is a test test"
-        const showModal = (chosenFolder, i) => {
+        const showModal = (args) => {
             if (modalWrap !== null) {
                 modalWrap.remove();
             }
-            var main_title = filename[chosenFolder][i];
+            var settings = args[0];
+            console.log(settings);
+            var main_title = settings[2];
             var tekst =
                 "<br> 0 = off, except for position and rotation of robot arms." +
                 "<br>" +
-                "<br> Camera gain: " + settings_list[3] +
-                "<br> Camera focus: " + settings_list[4] +
-                "<br> Camera exposure time: " + settings_list[5] +
-                "<br> Camera flash color: " + settings_list[6] +
-                "<br> Camera chromatic lock:  " + settings_list[7] +
-                "<br> Camera IR filter: " + settings_list[8] +
+                "<br> Camera gain: " + settings[4] +
+                "<br> Camera focus: " + settings[5] +
+                "<br> Camera exposure time: " + settings[6] +
+                "<br> Camera flash color: " + settings[7] +
+                "<br> Camera chromatic lock:  " + settings[8] +
+                "<br> Camera IR filter: " + settings[9] +
                 "<br>" +
-                "<br> Light bar exposure time: " + settings_list[15] +
-                "<br> Light bar flash color: " + settings_list[16] +
-                "<br> Light bar angle: " + settings_list[17] + "<br>" +
-                "<br> Backlight exposure time: " + settings_list[24] +
-                "<br> Backlight flash color: " + settings_list[25] +
+                "<br> Light bar exposure time: " + settings[16] +
+                "<br> Light bar flash color: " + settings[17] +
+                "<br> Light bar angle: " + settings[18] + "<br>" +
+                "<br> Backlight exposure time: " + settings[25] +
+                "<br> Backlight flash color: " + settings[26] +
                 "<br>" +
-                "<br> Camera arm x position: " + settings_list[9] +
-                "<br> Camera arm y position: " + settings_list[10] +
-                "<br> Camera arm z position: " + settings_list[11] +
-                "<br> Camera arm yaw rotation: " + settings_list[12] +
-                "<br> Camera arm pitch rotation: " + settings_list[13] +
-                "<br> Camera arm roll rotation: " + settings_list[14] +
+                "<br> Camera arm x position: " + settings[10] +
+                "<br> Camera arm y position: " + settings[11] +
+                "<br> Camera arm z position: " + settings[12] +
+                "<br> Camera arm yaw rotation: " + settings[13] +
+                "<br> Camera arm pitch rotation: " + settings[14] +
+                "<br> Camera arm roll rotation: " + settings[15] +
                 "<br>" +
-                "<br> Light bar arm x position: " + settings_list[18] +
-                "<br> Light bar arm y position: " + settings_list[19] +
-                "<br> Light bar arm z position: " + settings_list[20] +
-                "<br> Light bar arm yaw rotation: " + settings_list[21] +
-                "<br> Light bar arm pitch rotation: " + settings_list[22] +
-                "<br> Light bar arm roll rotation: " + settings_list[23];
+                "<br> Light bar arm x position: " + settings[19] +
+                "<br> Light bar arm y position: " + settings[20] +
+                "<br> Light bar arm z position: " + settings[21] +
+                "<br> Light bar arm yaw rotation: " + settings[22] +
+                "<br> Light bar arm pitch rotation: " + settings[23] +
+                "<br> Light bar arm roll rotation: " + settings[24];
 
             modalWrap = document.createElement("div");
             modalWrap.innerHTML = `
@@ -170,10 +172,6 @@
                     </div>
                     <div class="modal-body">
          `+ tekst + `
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn myButton begintest ">Save changes</button>
                     </div>
                 </div>
             </div>

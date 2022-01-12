@@ -11,6 +11,19 @@ from math import sqrt
 import mysql.connector
 
 
+def checkTableExists(dbcon, tablename) -> bool:
+    cursor = dbcon.cursor()
+    cursor.execute("""
+    SELECT * FROM information_schema.tables WHERE table_name = '{}'
+    """.format(tablename))
+    if cursor.fetchone()[0] == 1:
+        cursor.close()
+        return True
+
+    cursor.close()
+    return False
+
+
 def get_color_nr(argument):
     switcher = {
         "Red": 1,
@@ -162,21 +175,32 @@ def runTesting(OPCUA_client, ros_client, img_amount, foldername, lightcolor, bac
                             # TODO Step6: Retrieve image from the cameras URL.
                             ih.getURLImage(foldername, foldername, str(run[7]))
 
-                            # Upload settings to database
+                            # If database table does not exit, create it
                             database = mysql.connector.connect(
                                 host="localhost", user="andr", password="1212", database="brmysql")
                             cursor = database.cursor()
-                            cursor.execute("INSERT INTO images (test_id, path, run, camera_gainLevel, camera_focusScale, camera_exposureTime, " +
-                                           "camera_flashColor, camera_chromaticLock, camera_irFilter, camera_x, camera_y, camera_z, camera_yaw, camera_pitch, camera_roll, " +
-                                           "barLight_exposureTime, barLight_flashColor, barLight_angle, barLight_x, barLight_y, barLight_z, barLight_yaw, barLight_pitch, " +
-                                           "barLight_roll, backLight_exposureTime, backLight_flashColor) VALUES (" +
-                                           "{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})".format(foldername, "B_R_Illumination/static/images/" + foldername + "/" + foldername + str(
-                                               run[7]) + ".jpg", run[7],
-                                               cameraprofile.gain_level, cameraprofile.focus_scale, cameraprofile.exposure_time_camera, cameraprofile.flash_color_camera,
-                                               cameraprofile.chromatic_lock, cameraprofile.ir_filter, cameraarm_setup.xPos, cameraarm_setup.yPos, cameraarm_setup.zPos,
-                                               cameraarm_setup.yaw, cameraarm_setup.pitch, cameraarm_setup.roll, barlightprofile.exposure_time, barlightprofile.flash_color,
-                                               barlightprofile.angle, lightarm_setup.xPos, lightarm_setup.yPos, lightarm_setup.zPos, lightarm_setup.yaw, lightarm_setup.pitch,
-                                               lightarm_setup.roll, backlightprofile.exposure_time, backlightprofile.flash_color))
+                            if not checkTableExists(database, "images"):
+                                cursor.execute("""CREATE TABLE images (id INT AUTO_INCREMENT PRIMARY KEY, img_name VARCHAR(255), path VARCHAR(1024), 
+                                run SMALLINT UNSIGNED, camera_gainLevel TINYINT UNSIGNED, camera_focusScale INT UNSIGNED, 
+                                camera_exposureTime SMALLINT UNSIGNED, camera_flashColor TINYINT UNSIGNED, camera_chromaticLock BOOLEAN, 
+                                camera_irFilter BOOLEAN, camera_x INT, camera_y INT, camera_z INT, camera_yaw SMALLINT, camera_pitch SMALLINT, 
+                                camera_roll SMALLINT, barLight_exposureTime INT UNSIGNED, barLight_flashColor TINYINT UNSIGNED, barLight_angle SMALLINT, 
+                                barLight_x INT, barLight_y INT, barLight_z INT, barLight_yaw SMALLINT, barLight_pitch SMALLINT, barLight_roll SMALLINT, 
+                                backLight_exposureTime INT UNSIGNED, backLight_flashColor TINYINT UNSIGNED, passTest BOOLEAN)""")
+
+                            # Upload settings to database
+                            cursor.execute("""INSERT INTO images (test_id, path, run, camera_gainLevel, camera_focusScale, camera_exposureTime, 
+                                           camera_flashColor, camera_chromaticLock, camera_irFilter, camera_x, camera_y, camera_z, camera_yaw, camera_pitch, 
+                                           camera_roll, barLight_exposureTime, barLight_flashColor, barLight_angle, barLight_x, barLight_y, barLight_z, 
+                                           barLight_yaw, barLight_pitch, barLight_roll, backLight_exposureTime, backLight_flashColor) VALUES (
+                                           {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, 
+                                           {})""".format(foldername, "B_R_Illumination/static/images/" + foldername + "/" + foldername + str(
+                                run[7]) + ".jpg", run[7],
+                                cameraprofile.gain_level, cameraprofile.focus_scale, cameraprofile.exposure_time_camera, cameraprofile.flash_color_camera,
+                                cameraprofile.chromatic_lock, cameraprofile.ir_filter, cameraarm_setup.xPos, cameraarm_setup.yPos, cameraarm_setup.zPos,
+                                cameraarm_setup.yaw, cameraarm_setup.pitch, cameraarm_setup.roll, barlightprofile.exposure_time, barlightprofile.flash_color,
+                                barlightprofile.angle, lightarm_setup.xPos, lightarm_setup.yPos, lightarm_setup.zPos, lightarm_setup.yaw, lightarm_setup.pitch,
+                                lightarm_setup.roll, backlightprofile.exposure_time, backlightprofile.flash_color))
                             cursor.close()
 
                         else:

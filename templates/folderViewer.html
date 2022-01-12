@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<head>
+    <!--
+        Here we setup the necessary parameters and include css files.
+        There is no need for you to understand what is going on here, because i do not.
+    -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--<link href="/static/css/google_font.css" rel="stylesheet">-->
+    <link rel="stylesheet" type="text/css" href="/static/css/font.css" />
+    <!--<link rel="stylesheet" href="/static/css/baguetteBox.min.css">-->
+    <link rel="stylesheet" href="/static/css/baguetteBox.min.css">
+    <link rel="stylesheet" href="/static/imageViewer.css">
+    <title>Image folders</title>
+
+</head>
+
+<body>
+
+    <div class="container gallery-container">
+
+        <!--<h1>Image folders</h1>-->
+        <p class="page-description text-center">Folders for each test</p>
+
+        <div class="tz-gallery">
+            <div class="row" id="row">
+            </div>
+        </div>
+    </div>
+    <script>
+        console.log("test");
+        let test_id = JSON.parse('{{ test_id | tojson}}');
+        let count = JSON.parse('{{ count | tojson}}');
+        let n_passTest = JSON.parse('{{ n_passTest | tojson}}');
+        let image_paths = JSON.parse('{{ image_paths | tojson}}');
+
+        for (let i = 0; i < test_id.length; i++) { //We "build" the html page depending on amount of folders.
+            const para1 = document.createElement("div"); //Define a "div element"
+            para1.className = ("col-sm-6 col-md-4"); //Define the style class.
+            para1.id = ("col" + i); //Define a ID to the element.
+            const element1 = document.getElementById("row"); //We define the element that we want to append our new element under.
+            element1.appendChild(para1); //We now append our new element under the old element.
+
+            const para2 = document.createElement("div");
+            para2.className = ("thumbnail");
+            para2.id = ("thumbnail" + i);
+            const element2 = document.getElementById("col" + i);
+            element2.appendChild(para2);
+
+            const para8 = document.createElement("h3");
+            para8.className = ("caption");
+            const node8 = document.createTextNode(test_id[i]);
+            para8.appendChild(node8);
+            const element8 = document.getElementById("thumbnail" + i);
+            element8.appendChild(para8);
+
+            const para3 = document.createElement("a");
+            para3.className = ("lightbox");
+            //para3.type = ("lightbox")
+            para3.id = ("lightbox" + i);
+            para3.name = (i);
+            para3.href = ("/imageViewer/" + test_id[i]); //The i-variable will be parsed back to the backend server.
+            const element3 = document.getElementById("thumbnail" + i);
+            element3.appendChild(para3);
+
+            const para4 = document.createElement("img");
+            para4.className = ("card-img-top");
+            para4.id = ("img" + i);
+            para4.src = (image_paths[i]);
+            para4.alt = ("Rails");
+            const element4 = document.getElementById("lightbox" + i);
+            element4.appendChild(para4);
+
+            const para5 = document.createElement("div");
+            para5.className = ("caption");
+            para5.id = ("caption" + i);
+            const element5 = document.getElementById("thumbnail" + i);
+            element5.appendChild(para5);
+
+            const para7 = document.createElement("p");
+            const node7 = document.createTextNode("# GOOD: " + n_passTest[i]);
+            para7.appendChild(node7);
+            const linebreak = document.createElement('br');
+            para7.appendChild(linebreak);
+            const node7_extra = document.createTextNode("# TOTAL: " + count[i]);
+            para7.appendChild(node7_extra)
+            const element7 = document.getElementById("caption" + i);
+            element7.appendChild(para7);
+        }
+
+    </script>
+    {% endblock %}

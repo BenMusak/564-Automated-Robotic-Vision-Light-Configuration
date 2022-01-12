@@ -4,8 +4,9 @@ Routes and views for the flask application.
 
 from datetime import datetime
 from os import error
-from flask import render_template, request, jsonify, json
+from flask import Flask, render_template, request, jsonify, json
 from B_R_Illumination import app
+from flask_socketio import SocketIO, emit, send
 import BRClient as BR
 import folderHandler as fh
 import imageHandler as ih
@@ -21,8 +22,7 @@ import re
 import numpy as np
 import json
 import mysql.connector
-
-#import roboDK as rDK
+import threading
 
 response = ""
 folders = []
@@ -32,6 +32,7 @@ test_state = False
 run = [False, 0, 0, 0, 0, 0, 0, 0]
 firstrun = False
 ROS_Connected = True
+socketio = SocketIO(app)
 
 try:
     ros_client = rb.startROS_Connect()
@@ -213,8 +214,6 @@ def img(index):
     for (id, img_name, path, run, camera_gainLevel, camera_focusScale, camera_exposureTime, camera_flashColor, camera_chromaticLock, camera_irFilter, camera_x, camera_y, camera_z, camera_yaw, camera_pitch, camera_roll, barLight_exposureTime, barLight_flashColor, barLight_angle, barLight_x, barLight_y, barLight_z, barLight_yaw, barLight_pitch, barLight_roll, backLight_exposureTime, backLight_flashColor, passTest) in cursor:
         settings_list = [img_name, path, run, camera_gainLevel, camera_focusScale, camera_exposureTime, camera_flashColor, camera_chromaticLock, camera_irFilter, camera_x, camera_y, camera_z, camera_yaw, camera_pitch,
                          camera_roll, barLight_exposureTime, barLight_flashColor, barLight_angle, barLight_x, barLight_y, barLight_z, barLight_yaw, barLight_pitch, barLight_roll, backLight_exposureTime, backLight_flashColor, passTest]
-
-    xml_list = []
 
     # We now return the image-viewer page and the three necessary variable for determining which subfolder have been chosen.
     return render_template(
