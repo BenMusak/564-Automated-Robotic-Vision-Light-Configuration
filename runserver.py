@@ -47,7 +47,7 @@ OPCUA_client = OPCUA.connectAsClient("opc.tcp://192.168.87.210:4840")
 
 try:
     db = mysql.connector.connect(
-        host="localhost", user="andr", password="1212", database="brmysql")
+        host="85.191.222.184", user="br_user", password="br_user", database="brVision")
 
 except:
     print("Could not connect to database.")

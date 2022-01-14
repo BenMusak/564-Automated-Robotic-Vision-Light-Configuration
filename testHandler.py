@@ -34,7 +34,7 @@ def get_color_nr(argument):
     return switcher.get(argument, 0)  # Return 0 if chosen color does no exist.
 
 
-def runTesting(OPCUA_client, ros_client, img_amount, foldername, lightcolor, backlight, lightbar, cameralight, obj_hlw, viewpoint, run):
+def runTesting(OPCUA_client, ros_client, img_amount, test_id, lightcolor, backlight, lightbar, cameralight, obj_hlw, viewpoint, run):
     # Declaring max and min variables
     gain_max = 4
     gain_min = 0
@@ -173,14 +173,14 @@ def runTesting(OPCUA_client, ros_client, img_amount, foldername, lightcolor, bac
                             time.sleep((exposure_i*(pow(10, -6)))*14)
                             # print((exposure_i*(pow(10,-6)))*14)
                             # TODO Step6: Retrieve image from the cameras URL.
-                            ih.getURLImage(foldername, foldername, str(run[7]))
+                            ih.getURLImage(test_id, test_id, str(run[7]))
 
                             # If database table does not exit, create it
                             database = mysql.connector.connect(
-                                host="localhost", user="andr", password="1212", database="brmysql")
+                                host="85.191.222.184", user="br_user", password="br_user", database="brVision")
                             cursor = database.cursor()
                             if not checkTableExists(database, "images"):
-                                cursor.execute("""CREATE TABLE images (id INT AUTO_INCREMENT PRIMARY KEY, img_name VARCHAR(255), path VARCHAR(1024), 
+                                cursor.execute("""CREATE TABLE images (id INT AUTO_INCREMENT PRIMARY KEY, test_id VARCHAR(255), path VARCHAR(1024), 
                                 run SMALLINT UNSIGNED, camera_gainLevel TINYINT UNSIGNED, camera_focusScale INT UNSIGNED, 
                                 camera_exposureTime SMALLINT UNSIGNED, camera_flashColor TINYINT UNSIGNED, camera_chromaticLock BOOLEAN, 
                                 camera_irFilter BOOLEAN, camera_x INT, camera_y INT, camera_z INT, camera_yaw SMALLINT, camera_pitch SMALLINT, 
@@ -194,7 +194,7 @@ def runTesting(OPCUA_client, ros_client, img_amount, foldername, lightcolor, bac
                                            camera_roll, barLight_exposureTime, barLight_flashColor, barLight_angle, barLight_x, barLight_y, barLight_z, 
                                            barLight_yaw, barLight_pitch, barLight_roll, backLight_exposureTime, backLight_flashColor) VALUES (
                                            {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, 
-                                           {})""".format(foldername, "B_R_Illumination/static/images/" + foldername + "/" + foldername + str(
+                                           {})""".format(test_id, "/" + test_id + "/" + test_id + str(
                                 run[7]) + ".jpg", run[7],
                                 cameraprofile.gain_level, cameraprofile.focus_scale, cameraprofile.exposure_time_camera, cameraprofile.flash_color_camera,
                                 cameraprofile.chromatic_lock, cameraprofile.ir_filter, cameraarm_setup.xPos, cameraarm_setup.yPos, cameraarm_setup.zPos,

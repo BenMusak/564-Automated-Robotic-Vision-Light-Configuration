@@ -1,4 +1,3 @@
-img = []
+from imageHandler import getURLImage
 
-img.append([1, 2])
-print(img)
+getURLImage("Jens", "tmp", "0")
