@@ -28,6 +28,7 @@ def readValue(client, pvName):
 
     value = var.get_value()  # get value of node as a python builtin
     print("readValue="+str(value))
+    return value
 
 
 def setParameters(client, cameraProfile, barLightProfile1, backlightProfile):

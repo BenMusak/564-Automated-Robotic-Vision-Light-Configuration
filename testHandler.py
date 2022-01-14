@@ -21,6 +21,7 @@ def get_color_nr(argument):
 
 def runTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, backlight, lightbar, cameralight, obj_hlw, viewpoint, run):
     #Declaring max and min variables
+    img_acq_attempts = 3
     gain_max = 4
     gain_min = 0
     exposure_max = 1000
@@ -149,10 +150,13 @@ def runTesting(OPCUA_client,ros_client, img_amount, foldername, lightcolor, back
                             OPCUA.setTrigger(OPCUA_client)
                             print("Triggered camera")
                             
-                            time.sleep((exposure_i*(pow(10,-6)))*14)
-                            #print((exposure_i*(pow(10,-6)))*14)
-                            #TODO Step6: Retrieve image from the cameras URL.
-                            ih.getURLImage(foldername, foldername, str(run[7]))
+                            for attempt in range(img_acq_attempts):
+                                time.sleep((exposure_i*(pow(10,-6)))*14)
+                                if OPCUA.readValue(OPCUA_client, "hw.in.camera.imgAcqReady"):
+                                    #print((exposure_i*(pow(10,-6)))*14)
+                                    #TODO Step6: Retrieve image from the cameras URL.
+                                    ih.getURLImage(foldername, foldername, str(run[7]))
+                                    break
                             #TODO Step7: Log XML data.
                             #Save XML data.
                             xmlp.parseXMLtoFileAndWrite(xmlData, foldername, foldername, str(run[7]))
