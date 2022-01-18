@@ -190,7 +190,6 @@ def home():
 
 @app.route('/folders', methods=['GET', 'POST'])
 def folder():
-    folders = fh.getSubFolders()
     test_id = []
     count = []
     n_passTest = []
@@ -202,11 +201,10 @@ def folder():
     cursor.close()
 
     for i in range(len(output)):
-        if output[i][0] in folders:
-            test_id.append(output[i][0])
-            count.append(output[i][1])
-            n_passTest.append(output[i][2])
-            image_paths.append(output[i][3])
+        test_id.append(output[i][0])
+        count.append(output[i][1])
+        n_passTest.append(output[i][2])
+        image_paths.append(output[i][3])
     # We now return the folder page and all the subfolders and filenames.
     return render_template(
         # "test.html",
