@@ -49,7 +49,7 @@ def plan_camera_route(viewPoint, obj_hlw, feedback, step_x, step_y):
         try:
             # Computing the x, y and z coordinates of the points in the hemisphere wrt. to the robot frame
             # (we multiply with 50 just to make the hemisphere a bit larger)
-            z_hemsphe = (-x_it*x_it*a+c) + viewPoint + center[2]
+            z_hemsphe = (-x_it*x_it*a+c) + center[2]
             # We add 500 to move the hemisphere a bit away from origon.
             x_hemsphe = x_it + center[0]
             y_hemsphe = center[1]
@@ -69,7 +69,7 @@ def plan_camera_route(viewPoint, obj_hlw, feedback, step_x, step_y):
         try:
             # Computing the x, y and z coordinates of the points in the hemisphere wrt. to the robot frame
             # (we multiply with 50 just to make the hemisphere a bit larger)
-            z_hemsphe = (-y_it*y_it*b+c) + viewPoint + center[2]
+            z_hemsphe = (-y_it*y_it*b+c) + center[2]
             # We add 500 to move the hemisphere a bit away from origon.
             x_hemsphe = 0 + center[0]
             y_hemsphe = y_it + center[1]
@@ -158,7 +158,7 @@ def plan_light_route(viewPoint, obj_hlw, feedback, step_x, step_y):
                 #This results in a fraction, so for easier view the computation is split up:
                 numerator = ((pow(a,2)*pow(b,2))-(pow(b,2)*pow(x_it,2))-(pow(a,2)*pow(y_it,2)))
                 denominator = (pow(a,2)*pow(b,2))
-                z_ellipsoid = c*sqrt(numerator/denominator)+viewPoint + center[2]
+                z_ellipsoid = c*sqrt(numerator/denominator) + center[2]
                 #We can now compute the other coordinates.
                 x_ellipsoid = x_it + center[0]
                 y_ellipsoid = y_it + center[1]
