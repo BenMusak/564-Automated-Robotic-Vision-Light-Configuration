@@ -25,19 +25,19 @@
   <div class="collapse" id="collapseBacklight">
     <div>
       <div class="form-check form-check-inline form-check-orange">
-        <input class="form-check-input" type="radio" name="lightradio" id="RadioRedColor" value="Red">
+        <input class="form-check-input" type="checkbox" name="CheckRedColor" id="CheckRedColor" value="1">
         <label class="form-check-label" for="BacklightRedColor">Red color</label>
       </div>
       <div class="form-check form-check-inline form-check-orange">
-        <input class="form-check-input" type="radio" name="lightradio" id="RadioBlueColor" value="Blue">
+        <input class="form-check-input" type="checkbox" name="CheckBlueColor" id="CheckBlueColor" value="3">
         <label class="form-check-label" for="BacklightBlueColor">Blue color</label>
       </div>
       <div class="form-check form-check-inline form-check-orange">
-        <input class="form-check-input" type="radio" name="lightradio" id="RadioWhiteColor" value="White">
+        <input class="form-check-input" type="checkbox" name="CheckWhiteColor" id="CheckWhiteColor" value="99">
         <label class="form-check-label" for="BacklightWhiteColor">White color</label>
       </div>
       <div class="form-check form-check-inline form-check-orange">
-        <input class="form-check-input" type="radio" name="lightradio" id="RadioIRColor" value="IR">
+        <input class="form-check-input" type="checkbox" name="CheckIRColor" id="CheckIRColor" value="100">
         <label class="form-check-label" for="BacklightIRColor">IR color</label>
       </div>
     </div>
@@ -87,7 +87,10 @@
             camera : $('input[name="Cameralight"]:checked').val(),
             barlight1 : $('input[name="Barlight1"]:checked').val(),
             backlight : $('input[name="Backlight"]:checked').val(),
-            lightradio : $('input[name="lightradio"]:checked').val(),
+            CheckRedColor : $('input[name="CheckRedColor"]:checked').val(),
+            CheckBlueColor : $('input[name="CheckBlueColor"]:checked').val(),
+            CheckWhiteColor : $('input[name="CheckWhiteColor"]:checked').val(),
+            CheckIRColor : $('input[name="CheckIRColor"]:checked').val(),
             obj_width : $('input[name="formObjectWidth"]').val(),
             obj_length : $('input[name="formObjectLength"]').val(),
             obj_height : $('input[name="formObjectHeight"]').val(),

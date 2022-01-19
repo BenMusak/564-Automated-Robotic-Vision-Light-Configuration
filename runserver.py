@@ -36,6 +36,7 @@ run = [False, 0, 0, 0, 0, 0, 0, 0]
 firstrun = False
 ROS_Connected = True
 socketio = SocketIO(app)
+lightColors = []
 
 try:
     ros_client = rb.startROS_Connect()
@@ -85,10 +86,28 @@ def process():
 
     if backlight == "on" or barlight1 == "on" or camera == "on":
         try:
-            lightColor = request.form['lightradio']
-            print("The light color = " + lightColor)
+            lightColors.append(request.form['CheckRedColor'])
+            print("The light color = " + lightColors)
         except:
+            pass
+        try:
+            lightColors.append(request.form['CheckBlueColor'])
+            print("The light color = " + lightColors)
+        except:
+            pass
+        try:
+            lightColors.append(request.form['CheckWhiteColor'])
+            print("The light color = " + lightColors)
+        except:
+            pass
+        try:
+            lightColors.append(request.form['CheckIRColor'])
+            print("The light color = " + lightColors)
+        except:
+            pass
+        if len(lightColors) == 0:
             error_msg = error_msg + " No color have been chosen for the light. \n"
+
     else:
         lightColor = "off"
         print("The color = " + lightColor)
@@ -163,7 +182,7 @@ def process():
         # Here we call the testing loop.
         if ROS_Connected:
             test_state = th.runTesting(OPCUA_client, ros_client, int(
-                img_amount), test_name, lightColor, backlight, barlight1, camera, obj_dim, viewPoint, run)
+                img_amount), test_name, lightColors, backlight, barlight1, camera, obj_dim, viewPoint, run)
     elif test_state:
         response = "Test is already running."
         error_state = True
