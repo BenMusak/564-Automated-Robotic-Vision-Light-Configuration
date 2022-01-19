@@ -86,7 +86,7 @@
                 socket.emit('View button clicked', {
                     who: this.id
                 });
-                socket.on('image settings', (input) => {
+                socket.once('image settings', (input) => {
                     showModal(input);
                 });
             };
