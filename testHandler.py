@@ -34,21 +34,21 @@ def get_color_nr(argument):
     return switcher.get(argument, 0)  # Return 0 if chosen color does no exist.
 
 
-def runTesting(OPCUA_client, ros_client, img_amount, test_id, lightcolor, backlight, lightbar, cameralight, obj_hlw, viewpoint, run):
+def runTesting(OPCUA_client, ros_client, img_amount, test_id, lightcolors, backlight, lightbar, cameralight, obj_hlw, viewpoint, run):
     # Declaring max and min variables
     
     gain_max = 4
     gain_min = 0
-    exposure_max = 1000
-    exposure_min = 0
+    exposure_max = 600
+    exposure_min = 100
     center = [0.367, 0.120, 0.154]
     light_bar_failed = False
     # Compute the number of iteration steps for images.
     # If the lightbar is off we have one less loop to iterate trough and iteration steps for images will therefore be calculated differently.
     if lightbar == "off":
-        x = (img_amount ** (1/3))
+        x = (img_amount ** (1/2))
     else:
-        x = (img_amount ** (1/4))
+        x = (img_amount ** (1/3))
     print("Number of steps for each loop = ", x)
     # Convert the iteration steps to gain levels and exposure time.
     gain_steps = (gain_max-gain_min)/x
@@ -73,24 +73,10 @@ def runTesting(OPCUA_client, ros_client, img_amount, test_id, lightcolor, backli
     lightarm_setup = con.barLightSetupProfile()
     cameraarm_setup = con.CameraSetupProfile()
 
-    if backlight == "on":
-        backlightprofile.flash_color = get_color_nr(lightcolor)
-    else:
-        backlightprofile.flash_color = 0
-    if lightbar == "on":
-        barlightprofile.flash_color = get_color_nr(lightcolor)
-        barlightprofile.angle = 90
-    else:
-        barlightprofile.flash_color = 0
-    if cameralight == "on":
-        cameraprofile.flash_color_camera = get_color_nr(lightcolor)
-        if cameraprofile.flash_color_camera == 100:
-            cameraprofile.ir_filter = 1
-    else:
-        cameraprofile.flash_color_camera = 0
-
     # Run the nedsted for loop and iterate over the routes, gain and exposure steps.
     for camera_i in camera_route:
+        barlightprofile.angle = 90
+        OPCUA.setParameters(OPCUA_client, cameraprofile, barlightprofile, backlightprofile)
         # Move UR5 light to homing position.
         rb.ROS_SendGoal(ros_client, 1, -0.16, 0.75,
                         "lightbar_robot", viewpoint, obj_hlw)
@@ -112,10 +98,10 @@ def runTesting(OPCUA_client, ros_client, img_amount, test_id, lightcolor, backli
             cameraarm_setup.pitch = UR5_cam_data["roty"]
             cameraarm_setup.roll = UR5_cam_data["rotz"]
             # Computing the distance between object and camera lens.
-            delta_x = (cameraarm_setup.xPos - (center[0]+obj_hlw[2]))
-            delta_y = (cameraarm_setup.yPos - (center[1]+obj_hlw[1]))
+            delta_x = (cameraarm_setup.xPos - (center[0]))
+            delta_y = (cameraarm_setup.yPos - (center[1]))
             delta_z = (cameraarm_setup.zPos - (center[2]+viewpoint))
-            distance = sqrt(pow(delta_x, 2)+pow(delta_y, 2)+pow(delta_z, 2))
+            distance = sqrt(pow(delta_x, 2)+pow(delta_y, 2)+pow(delta_z, 2))*1000
             # Computing the focus. Normally this would be equal to distance, but this camera is not calibrated,
             # so we need to compensate with the following formula:
             cameraprofile.focus_scale = int(-0.00021 *
@@ -144,7 +130,25 @@ def runTesting(OPCUA_client, ros_client, img_amount, test_id, lightcolor, backli
                 # Move on when movement is confirmed.
                 # Maybe even receive pose for the robot arm.
                 if light_bar_failed == False:
-                    for gain_i in np.arange(gain_min, gain_max, gain_steps):
+                    for color in lightcolors:
+                        if backlight == "on":
+                            backlightprofile.flash_color = int(color)
+                        else:
+                            backlightprofile.flash_color = 0
+                        if lightbar == "on":
+                            barlightprofile.flash_color = int(color)
+                            barlightprofile.angle = 90
+                        else:
+                            barlightprofile.flash_color = 0
+                        if cameralight == "on":
+                            cameraprofile.flash_color_camera = int(color)
+                            if cameraprofile.flash_color_camera == 100:
+                                cameraprofile.ir_filter = 1
+                            else:
+                                cameraprofile.ir_filter = 0
+                        else:
+                            cameraprofile.flash_color_camera = 0
+
                         for exposure_i in np.arange(exposure_min, exposure_max, exposure_steps):
                             if run[0] == False:
                                 break
@@ -152,7 +156,7 @@ def runTesting(OPCUA_client, ros_client, img_amount, test_id, lightcolor, backli
                             #print("We reached the innr loops")
                             # TODO Step4: Setup XML file and send to PLC with OPCUA
 
-                            cameraprofile.gain_level = int(gain_i)
+                            cameraprofile.gain_level = int(1)
                             cameraprofile.chromatic_lock = 1
                             cameraprofile.exposure_time_camera = int(
                                 exposure_i)
@@ -168,11 +172,22 @@ def runTesting(OPCUA_client, ros_client, img_amount, test_id, lightcolor, backli
                             OPCUA.getRootNode(OPCUA_client)
                             OPCUA.setParameters(
                                 OPCUA_client, cameraprofile, barlightprofile, backlightprofile)
-                            OPCUA.setTrigger(OPCUA_client)
+                            if run[7] == 1:
+                                print("Long trigger")
+                                OPCUA.setTrigger(OPCUA_client)
+                                time.sleep(1)
+                                OPCUA.setTrigger(OPCUA_client)
+                            else:
+                                OPCUA.setTrigger(OPCUA_client)
+                                time.sleep(0.1)
+                                OPCUA.setTrigger(OPCUA_client)
                             print("Triggered camera")
 
-                            time.sleep((exposure_i*(pow(10, -6)))*14)
-                            # print((exposure_i*(pow(10,-6)))*14)
+                            while True:
+                                time.sleep(0.1)
+                                if OPCUA.readValue(OPCUA_client, "hw.in.camera.imgAcqReady"):
+                                    break
+
                             # TODO Step6: Retrieve image from the cameras URL.
                             ih.getURLImage(test_id, test_id, str(run[7]))
 
