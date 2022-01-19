@@ -1,0 +1,192 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<head>
+    <!--
+        Here we setup the necessary parameters and include css files.
+        There is no need for you to understand what is going on here, because i do not.
+    -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Image folder</title>
+    <!--<link rel="stylesheet" href="/static/css/bootstrap_maxcdn.min.css">-->
+    <link href="/static/css/google_font.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/baguetteBox.min.css">
+    <link rel="stylesheet" href="/static/imageViewer.css">
+</head>
+
+<body>
+    <div class="container gallery-container">
+
+        <!--<h1>Image gallery</h1>-->
+        <p class="page-description text-center">Thumbnails With Title And Description</p>
+        <div class="tz-gallery">
+            <div class="row" id="row">
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.1/socket.io.js"></script>
+    <script type="text/javascript">
+        var socket;
+        $(document).ready(function () {
+            socket = io.connect('http://127.0.0.1:5000');
+        });
+        let id = JSON.parse('{{ id | tojson}}');
+        let images = JSON.parse('{{ images | tojson}}');
+        let passTest = JSON.parse('{{passTest | tojson}}');
+
+        for (let i = 0; i < images.length; i++) {//We now "build" the html page depending on the chosen
+            const para1 = document.createElement("div"); //Define a "div element"
+            para1.className = ("col-sm-6 col-md-4"); //Define the style class.
+            para1.id = ("col" + i); //Define a ID to the element.
+            const element1 = document.getElementById("row"); //We define the element that we want to append our new element under.
+            element1.appendChild(para1); //We now append our new element under the old element.
+
+            const para2 = document.createElement("div");
+            para2.className = ("thumbnail");
+            para2.id = ("thumbnail" + i);
+            const element2 = document.getElementById("col" + i);
+            element2.appendChild(para2);
+
+            const para3 = document.createElement("a");
+            para3.className = ("lightbox");
+            para3.id = ("lightbox" + i);
+            para3.href = ("http://85.191.222.184" + images[i]);
+            const element3 = document.getElementById("thumbnail" + i);
+            element3.appendChild(para3);
+
+            const para4 = document.createElement("img");
+            para4.className = ("card-img-top");
+            para4.id = ("img" + i);
+            para4.src = ("http://85.191.222.184" + images[i]);
+            para4.alt = ("Rails");
+            const element4 = document.getElementById("lightbox" + i);
+            element4.appendChild(para4);
+
+            const para5 = document.createElement("div");
+            para5.className = ("caption");
+            para5.id = ("caption" + i);
+            const element5 = document.getElementById("thumbnail" + i);
+            element5.appendChild(para5);
+
+            const para9 = document.createElement("div");
+            para9.className = ("btn-group");
+            para9.id = ("btn-group" + i);
+            const element9 = document.getElementById("caption" + i);
+            element9.appendChild(para9);
+
+            const para10 = document.createElement("button");
+            para10.type = ("button");
+            para10.id = (id[i]);
+            para10.className = ("btn btn-sm btn-outline-secondary");
+            para10.onclick = function () {
+                socket.emit('View button clicked', {
+                    who: this.id
+                });
+                socket.on('image settings', (input) => {
+                    showModal(input);
+                });
+            };
+            const node10 = document.createTextNode("View");
+            para10.appendChild(node10);
+            const element10 = document.getElementById("btn-group" + i);
+            element10.appendChild(para10);
+
+            var para11 = document.createElement('input');
+            para11.type = "checkbox";
+            para11.id = (id[i]);
+            para11.onchange = function () {
+                socket.emit('Change pass', {
+
+                    who: this.id,
+                    value: this.checked
+                });
+            };
+            if (passTest[i] === 1) {
+                para11.checked = true;
+            }
+            else {
+                para11.checked = false;
+            }
+            var label11 = document.createElement('label');
+            label11.appendChild(document.createTextNode('Passed test?'));
+            const element11 = document.getElementById("btn-group" + i);
+            element11.appendChild(para11);
+            element11.appendChild(label11)
+
+        }
+
+    </script>
+    <script>
+        var modalWrap = null
+        //var tekst = "This is a test test"
+        const showModal = (args) => {
+            if (modalWrap !== null) {
+                modalWrap.remove();
+            }
+            var settings = args[0];
+            console.log(settings);
+            var main_title = settings[2];
+            var tekst =
+                "<br> 0 = off, except for position and rotation of robot arms." +
+                "<br>" +
+                "<br> Camera gain: " + settings[4] +
+                "<br> Camera focus: " + settings[5] +
+                "<br> Camera exposure time: " + settings[6] +
+                "<br> Camera flash color: " + settings[7] +
+                "<br> Camera chromatic lock:  " + settings[8] +
+                "<br> Camera IR filter: " + settings[9] +
+                "<br>" +
+                "<br> Light bar exposure time: " + settings[16] +
+                "<br> Light bar flash color: " + settings[17] +
+                "<br> Light bar angle: " + settings[18] + "<br>" +
+                "<br> Backlight exposure time: " + settings[25] +
+                "<br> Backlight flash color: " + settings[26] +
+                "<br>" +
+                "<br> Camera arm x position: " + settings[10] +
+                "<br> Camera arm y position: " + settings[11] +
+                "<br> Camera arm z position: " + settings[12] +
+                "<br> Camera arm yaw rotation: " + settings[13] +
+                "<br> Camera arm pitch rotation: " + settings[14] +
+                "<br> Camera arm roll rotation: " + settings[15] +
+                "<br>" +
+                "<br> Light bar arm x position: " + settings[19] +
+                "<br> Light bar arm y position: " + settings[20] +
+                "<br> Light bar arm z position: " + settings[21] +
+                "<br> Light bar arm yaw rotation: " + settings[22] +
+                "<br> Light bar arm pitch rotation: " + settings[23] +
+                "<br> Light bar arm roll rotation: " + settings[24];
+
+            modalWrap = document.createElement("div");
+            modalWrap.innerHTML = `
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">`+ main_title + `</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+         `+ tekst + `
+                    </div>
+                </div>
+            </div>
+        </div>      
+        `;
+            document.body.append(modalWrap);
+            var modal = new bootstrap.Modal(modalWrap.querySelector('.modal'));
+            modal.show();
+
+        }
+    </script>
+
+    <script src="/static/js/imageViewer/baguetteBox.js"></script>
+    <script>
+        baguetteBox.run('.tz-gallery');
+    </script>
+</body>
+{% endblock %}
